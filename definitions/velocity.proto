@@ -1,0 +1,34 @@
+package VelocityProto;
+
+message Capture {
+  optional string impressionId    = 1;
+  required string ifa             = 2;
+  required uint32 sequenceIndex   = 3;
+  optional string appId           = 4;
+  optional string metadata        = 5;
+  required PlatformType platform  = 6;
+  repeated Sensor sensors         = 7;
+  required double timestamp       = 8;
+
+  enum PlatformType {
+    IOS     = 0;
+    Android = 1;
+  }
+}
+
+message Sensor {
+  required Type type      = 1;
+  repeated Sample samples = 2;
+
+  enum Type {
+    Accel   = 0;
+    Gyro    = 1;
+    Mag     = 2;
+    GPS     = 3;
+  }
+}
+
+message Sample {
+  required double timestamp   = 1;
+  repeated float values       = 2;
+}

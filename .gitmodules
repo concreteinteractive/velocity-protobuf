@@ -1,0 +1,3 @@
+[submodule "vendor/protobuf-objc"]
+	path = vendor/protobuf-objc
+	url = git@github.com:alexeyxo/protobuf-objc.git

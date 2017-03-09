@@ -1,2 +1,2 @@
 # velocity-protobuf
-Velocity Protocol Buffers Messages
+Velocity Protocol Buffers
