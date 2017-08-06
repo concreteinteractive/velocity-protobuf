@@ -1,5 +1,10 @@
 package VelocityProto;
 
+enum PlatformType {
+  IOS     = 0;
+  Android = 1;
+}
+
 message Capture {
   optional string impressionId    = 1;
   required string ifa             = 2;
@@ -9,11 +14,6 @@ message Capture {
   required PlatformType platform  = 6;
   repeated Sensor sensors         = 7;
   required double timestamp       = 8;
-
-  enum PlatformType {
-    IOS     = 0;
-    Android = 1;
-  }
 }
 
 message Sensor {
@@ -31,4 +31,14 @@ message Sensor {
 message Sample {
   required double timestamp   = 1;
   repeated float values       = 2;
+}
+
+message DetectMotionRequest {
+  required string id              = 1;
+  required string userId          = 2;
+  repeated string modelName       = 3;
+  repeated Sensor sensors         = 4;
+  required uint32 sequenceIndex   = 5;
+  required PlatformType platform  = 6;
+  required double timestamp       = 7;
 }
