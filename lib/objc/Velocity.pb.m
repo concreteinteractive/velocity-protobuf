@@ -21,13 +21,33 @@ static PBExtensionRegistry* extensionRegistry = nil;
 }
 @end
 
+BOOL VLTPBPlatformTypeIsValidValue(VLTPBPlatformType value) {
+  switch (value) {
+    case VLTPBPlatformTypeIos:
+    case VLTPBPlatformTypeAndroid:
+      return YES;
+    default:
+      return NO;
+  }
+}
+NSString *NSStringFromVLTPBPlatformType(VLTPBPlatformType value) {
+  switch (value) {
+    case VLTPBPlatformTypeIos:
+      return @"VLTPBPlatformTypeIos";
+    case VLTPBPlatformTypeAndroid:
+      return @"VLTPBPlatformTypeAndroid";
+    default:
+      return nil;
+  }
+}
+
 @interface VLTPBCapture ()
 @property (strong) NSString* impressionId;
 @property (strong) NSString* ifa;
 @property UInt32 sequenceIndex;
 @property (strong) NSString* appId;
 @property (strong) NSString* metadata;
-@property VLTPBCapturePlatformType platform;
+@property VLTPBPlatformType platform;
 @property (strong) NSMutableArray * sensorsArray;
 @property Float64 timestamp;
 @end
@@ -92,7 +112,7 @@ static PBExtensionRegistry* extensionRegistry = nil;
     self.sequenceIndex = 0;
     self.appId = @"";
     self.metadata = @"";
-    self.platform = VLTPBCapturePlatformTypeIos;
+    self.platform = VLTPBPlatformTypeIos;
     self.timestamp = 0;
   }
   return self;
@@ -247,7 +267,7 @@ static VLTPBCapture* defaultVLTPBCaptureInstance = nil;
     [output appendFormat:@"%@%@: %@\n", indent, @"metadata", self.metadata];
   }
   if (self.hasPlatform) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"platform", NSStringFromVLTPBCapturePlatformType(self.platform)];
+    [output appendFormat:@"%@%@: %@\n", indent, @"platform", NSStringFromVLTPBPlatformType(self.platform)];
   }
   [self.sensorsArray enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
     [output appendFormat:@"%@%@ {\n", indent, @"sensors"];
@@ -345,26 +365,6 @@ static VLTPBCapture* defaultVLTPBCaptureInstance = nil;
   return hashCode;
 }
 @end
-
-BOOL VLTPBCapturePlatformTypeIsValidValue(VLTPBCapturePlatformType value) {
-  switch (value) {
-    case VLTPBCapturePlatformTypeIos:
-    case VLTPBCapturePlatformTypeAndroid:
-      return YES;
-    default:
-      return NO;
-  }
-}
-NSString *NSStringFromVLTPBCapturePlatformType(VLTPBCapturePlatformType value) {
-  switch (value) {
-    case VLTPBCapturePlatformTypeIos:
-      return @"VLTPBCapturePlatformTypeIos";
-    case VLTPBCapturePlatformTypeAndroid:
-      return @"VLTPBCapturePlatformTypeAndroid";
-    default:
-      return nil;
-  }
-}
 
 @interface VLTPBCaptureBuilder()
 @property (strong) VLTPBCapture* resultCapture;
@@ -474,8 +474,8 @@ NSString *NSStringFromVLTPBCapturePlatformType(VLTPBCapturePlatformType value) {
         break;
       }
       case 48: {
-        VLTPBCapturePlatformType value = (VLTPBCapturePlatformType)[input readEnum];
-        if (VLTPBCapturePlatformTypeIsValidValue(value)) {
+        VLTPBPlatformType value = (VLTPBPlatformType)[input readEnum];
+        if (VLTPBPlatformTypeIsValidValue(value)) {
           [self setPlatform:value];
         } else {
           [unknownFields mergeVarintField:6 value:value];
@@ -578,17 +578,17 @@ NSString *NSStringFromVLTPBCapturePlatformType(VLTPBCapturePlatformType value) {
 - (BOOL) hasPlatform {
   return resultCapture.hasPlatform;
 }
-- (VLTPBCapturePlatformType) platform {
+- (VLTPBPlatformType) platform {
   return resultCapture.platform;
 }
-- (VLTPBCaptureBuilder*) setPlatform:(VLTPBCapturePlatformType) value {
+- (VLTPBCaptureBuilder*) setPlatform:(VLTPBPlatformType) value {
   resultCapture.hasPlatform = YES;
   resultCapture.platform = value;
   return self;
 }
 - (VLTPBCaptureBuilder*) clearPlatform {
   resultCapture.hasPlatform = NO;
-  resultCapture.platform = VLTPBCapturePlatformTypeIos;
+  resultCapture.platform = VLTPBPlatformTypeIos;
   return self;
 }
 - (NSMutableArray *)sensors {
@@ -1219,6 +1219,561 @@ static VLTPBSample* defaultVLTPBSampleInstance = nil;
 }
 - (VLTPBSampleBuilder *)clearValues {
   resultSample.valuesArray = nil;
+  return self;
+}
+@end
+
+@interface VLTPBDetectMotionRequest ()
+@property (strong) NSString* id;
+@property (strong) NSString* userId;
+@property UInt32 sequenceIndex;
+@property VLTPBPlatformType platform;
+@property Float64 timestamp;
+@property (strong) NSMutableArray * modelNameArray;
+@property (strong) NSMutableArray * sensorsArray;
+@end
+
+@implementation VLTPBDetectMotionRequest
+
+- (BOOL) hasId {
+  return !!hasId_;
+}
+- (void) setHasId:(BOOL) _value_ {
+  hasId_ = !!_value_;
+}
+@synthesize id;
+- (BOOL) hasUserId {
+  return !!hasUserId_;
+}
+- (void) setHasUserId:(BOOL) _value_ {
+  hasUserId_ = !!_value_;
+}
+@synthesize userId;
+- (BOOL) hasSequenceIndex {
+  return !!hasSequenceIndex_;
+}
+- (void) setHasSequenceIndex:(BOOL) _value_ {
+  hasSequenceIndex_ = !!_value_;
+}
+@synthesize sequenceIndex;
+- (BOOL) hasPlatform {
+  return !!hasPlatform_;
+}
+- (void) setHasPlatform:(BOOL) _value_ {
+  hasPlatform_ = !!_value_;
+}
+@synthesize platform;
+- (BOOL) hasTimestamp {
+  return !!hasTimestamp_;
+}
+- (void) setHasTimestamp:(BOOL) _value_ {
+  hasTimestamp_ = !!_value_;
+}
+@synthesize timestamp;
+@synthesize modelNameArray;
+@dynamic modelName;
+@synthesize sensorsArray;
+@dynamic sensors;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.id = @"";
+    self.userId = @"";
+    self.sequenceIndex = 0;
+    self.platform = VLTPBPlatformTypeIos;
+    self.timestamp = 0;
+  }
+  return self;
+}
+static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
++ (void) initialize {
+  if (self == [VLTPBDetectMotionRequest class]) {
+    defaultVLTPBDetectMotionRequestInstance = [[VLTPBDetectMotionRequest alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultVLTPBDetectMotionRequestInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultVLTPBDetectMotionRequestInstance;
+}
+- (NSArray *)modelName {
+  return modelNameArray;
+}
+- (NSString*)modelNameAtIndex:(NSUInteger)index {
+  return [modelNameArray objectAtIndex:index];
+}
+- (NSArray *)sensors {
+  return sensorsArray;
+}
+- (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index {
+  return [sensorsArray objectAtIndex:index];
+}
+- (BOOL) isInitialized {
+  if (!self.hasId) {
+    return NO;
+  }
+  if (!self.hasUserId) {
+    return NO;
+  }
+  if (!self.hasSequenceIndex) {
+    return NO;
+  }
+  if (!self.hasPlatform) {
+    return NO;
+  }
+  if (!self.hasTimestamp) {
+    return NO;
+  }
+  __block BOOL isInitsensors = YES;
+   [self.sensors enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
+    if (!element.isInitialized) {
+      isInitsensors = NO;
+      *stop = YES;
+    }
+  }];
+  if (!isInitsensors) return isInitsensors;
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasId) {
+    [output writeString:1 value:self.id];
+  }
+  if (self.hasUserId) {
+    [output writeString:2 value:self.userId];
+  }
+  if (self.hasSequenceIndex) {
+    [output writeUInt32:3 value:self.sequenceIndex];
+  }
+  if (self.hasPlatform) {
+    [output writeEnum:4 value:self.platform];
+  }
+  if (self.hasTimestamp) {
+    [output writeDouble:5 value:self.timestamp];
+  }
+  [self.modelNameArray enumerateObjectsUsingBlock:^(NSString *element, NSUInteger idx, BOOL *stop) {
+    [output writeString:6 value:element];
+  }];
+  [self.sensorsArray enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
+    [output writeMessage:7 value:element];
+  }];
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasId) {
+    size_ += computeStringSize(1, self.id);
+  }
+  if (self.hasUserId) {
+    size_ += computeStringSize(2, self.userId);
+  }
+  if (self.hasSequenceIndex) {
+    size_ += computeUInt32Size(3, self.sequenceIndex);
+  }
+  if (self.hasPlatform) {
+    size_ += computeEnumSize(4, self.platform);
+  }
+  if (self.hasTimestamp) {
+    size_ += computeDoubleSize(5, self.timestamp);
+  }
+  {
+    __block SInt32 dataSize = 0;
+    const NSUInteger count = self.modelNameArray.count;
+    [self.modelNameArray enumerateObjectsUsingBlock:^(NSString *element, NSUInteger idx, BOOL *stop) {
+      dataSize += computeStringSizeNoTag(element);
+    }];
+    size_ += dataSize;
+    size_ += (SInt32)(1 * count);
+  }
+  [self.sensorsArray enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
+    size_ += computeMessageSize(7, element);
+  }];
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (VLTPBDetectMotionRequest*) parseFromData:(NSData*) data {
+  return (VLTPBDetectMotionRequest*)[[[VLTPBDetectMotionRequest builder] mergeFromData:data] build];
+}
++ (VLTPBDetectMotionRequest*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBDetectMotionRequest*)[[[VLTPBDetectMotionRequest builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBDetectMotionRequest*) parseFromInputStream:(NSInputStream*) input {
+  return (VLTPBDetectMotionRequest*)[[[VLTPBDetectMotionRequest builder] mergeFromInputStream:input] build];
+}
++ (VLTPBDetectMotionRequest*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBDetectMotionRequest*)[[[VLTPBDetectMotionRequest builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBDetectMotionRequest*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (VLTPBDetectMotionRequest*)[[[VLTPBDetectMotionRequest builder] mergeFromCodedInputStream:input] build];
+}
++ (VLTPBDetectMotionRequest*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBDetectMotionRequest*)[[[VLTPBDetectMotionRequest builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBDetectMotionRequestBuilder*) builder {
+  return [[VLTPBDetectMotionRequestBuilder alloc] init];
+}
++ (VLTPBDetectMotionRequestBuilder*) builderWithPrototype:(VLTPBDetectMotionRequest*) prototype {
+  return [[VLTPBDetectMotionRequest builder] mergeFrom:prototype];
+}
+- (VLTPBDetectMotionRequestBuilder*) builder {
+  return [VLTPBDetectMotionRequest builder];
+}
+- (VLTPBDetectMotionRequestBuilder*) toBuilder {
+  return [VLTPBDetectMotionRequest builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"id", self.id];
+  }
+  if (self.hasUserId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"userId", self.userId];
+  }
+  if (self.hasSequenceIndex) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"sequenceIndex", [NSNumber numberWithInteger:self.sequenceIndex]];
+  }
+  if (self.hasPlatform) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"platform", NSStringFromVLTPBPlatformType(self.platform)];
+  }
+  if (self.hasTimestamp) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"timestamp", [NSNumber numberWithDouble:self.timestamp]];
+  }
+  [self.modelNameArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"modelName", obj];
+  }];
+  [self.sensorsArray enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
+    [output appendFormat:@"%@%@ {\n", indent, @"sensors"];
+    [element writeDescriptionTo:output
+                     withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }];
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasId) {
+    [dictionary setObject: self.id forKey: @"id"];
+  }
+  if (self.hasUserId) {
+    [dictionary setObject: self.userId forKey: @"userId"];
+  }
+  if (self.hasSequenceIndex) {
+    [dictionary setObject: [NSNumber numberWithInteger:self.sequenceIndex] forKey: @"sequenceIndex"];
+  }
+  if (self.hasPlatform) {
+    [dictionary setObject: @(self.platform) forKey: @"platform"];
+  }
+  if (self.hasTimestamp) {
+    [dictionary setObject: [NSNumber numberWithDouble:self.timestamp] forKey: @"timestamp"];
+  }
+  [dictionary setObject:self.modelName forKey: @"modelName"];
+  for (VLTPBSensor* element in self.sensorsArray) {
+    NSMutableDictionary *elementDictionary = [NSMutableDictionary dictionary];
+    [element storeInDictionary:elementDictionary];
+    [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"sensors"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[VLTPBDetectMotionRequest class]]) {
+    return NO;
+  }
+  VLTPBDetectMotionRequest *otherMessage = other;
+  return
+      self.hasId == otherMessage.hasId &&
+      (!self.hasId || [self.id isEqual:otherMessage.id]) &&
+      self.hasUserId == otherMessage.hasUserId &&
+      (!self.hasUserId || [self.userId isEqual:otherMessage.userId]) &&
+      self.hasSequenceIndex == otherMessage.hasSequenceIndex &&
+      (!self.hasSequenceIndex || self.sequenceIndex == otherMessage.sequenceIndex) &&
+      self.hasPlatform == otherMessage.hasPlatform &&
+      (!self.hasPlatform || self.platform == otherMessage.platform) &&
+      self.hasTimestamp == otherMessage.hasTimestamp &&
+      (!self.hasTimestamp || self.timestamp == otherMessage.timestamp) &&
+      [self.modelNameArray isEqualToArray:otherMessage.modelNameArray] &&
+      [self.sensorsArray isEqualToArray:otherMessage.sensorsArray] &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasId) {
+    hashCode = hashCode * 31 + [self.id hash];
+  }
+  if (self.hasUserId) {
+    hashCode = hashCode * 31 + [self.userId hash];
+  }
+  if (self.hasSequenceIndex) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.sequenceIndex] hash];
+  }
+  if (self.hasPlatform) {
+    hashCode = hashCode * 31 + self.platform;
+  }
+  if (self.hasTimestamp) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithDouble:self.timestamp] hash];
+  }
+  [self.modelNameArray enumerateObjectsUsingBlock:^(NSString *element, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [element hash];
+  }];
+  [self.sensorsArray enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [element hash];
+  }];
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface VLTPBDetectMotionRequestBuilder()
+@property (strong) VLTPBDetectMotionRequest* resultDetectMotionRequest;
+@end
+
+@implementation VLTPBDetectMotionRequestBuilder
+@synthesize resultDetectMotionRequest;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultDetectMotionRequest = [[VLTPBDetectMotionRequest alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultDetectMotionRequest;
+}
+- (VLTPBDetectMotionRequestBuilder*) clear {
+  self.resultDetectMotionRequest = [[VLTPBDetectMotionRequest alloc] init];
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder*) clone {
+  return [VLTPBDetectMotionRequest builderWithPrototype:resultDetectMotionRequest];
+}
+- (VLTPBDetectMotionRequest*) defaultInstance {
+  return [VLTPBDetectMotionRequest defaultInstance];
+}
+- (VLTPBDetectMotionRequest*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (VLTPBDetectMotionRequest*) buildPartial {
+  VLTPBDetectMotionRequest* returnMe = resultDetectMotionRequest;
+  self.resultDetectMotionRequest = nil;
+  return returnMe;
+}
+- (VLTPBDetectMotionRequestBuilder*) mergeFrom:(VLTPBDetectMotionRequest*) other {
+  if (other == [VLTPBDetectMotionRequest defaultInstance]) {
+    return self;
+  }
+  if (other.hasId) {
+    [self setId:other.id];
+  }
+  if (other.hasUserId) {
+    [self setUserId:other.userId];
+  }
+  if (other.hasSequenceIndex) {
+    [self setSequenceIndex:other.sequenceIndex];
+  }
+  if (other.hasPlatform) {
+    [self setPlatform:other.platform];
+  }
+  if (other.hasTimestamp) {
+    [self setTimestamp:other.timestamp];
+  }
+  if (other.modelNameArray.count > 0) {
+    if (resultDetectMotionRequest.modelNameArray == nil) {
+      resultDetectMotionRequest.modelNameArray = [[NSMutableArray alloc] initWithArray:other.modelNameArray];
+    } else {
+      [resultDetectMotionRequest.modelNameArray addObjectsFromArray:other.modelNameArray];
+    }
+  }
+  if (other.sensorsArray.count > 0) {
+    if (resultDetectMotionRequest.sensorsArray == nil) {
+      resultDetectMotionRequest.sensorsArray = [[NSMutableArray alloc] initWithArray:other.sensorsArray];
+    } else {
+      [resultDetectMotionRequest.sensorsArray addObjectsFromArray:other.sensorsArray];
+    }
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (VLTPBDetectMotionRequestBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        [self setId:[input readString]];
+        break;
+      }
+      case 18: {
+        [self setUserId:[input readString]];
+        break;
+      }
+      case 24: {
+        [self setSequenceIndex:[input readUInt32]];
+        break;
+      }
+      case 32: {
+        VLTPBPlatformType value = (VLTPBPlatformType)[input readEnum];
+        if (VLTPBPlatformTypeIsValidValue(value)) {
+          [self setPlatform:value];
+        } else {
+          [unknownFields mergeVarintField:4 value:value];
+        }
+        break;
+      }
+      case 41: {
+        [self setTimestamp:[input readDouble]];
+        break;
+      }
+      case 50: {
+        [self addModelName:[input readString]];
+        break;
+      }
+      case 58: {
+        VLTPBSensorBuilder* subBuilder = [VLTPBSensor builder];
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self addSensors:[subBuilder buildPartial]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasId {
+  return resultDetectMotionRequest.hasId;
+}
+- (NSString*) id {
+  return resultDetectMotionRequest.id;
+}
+- (VLTPBDetectMotionRequestBuilder*) setId:(NSString*) value {
+  resultDetectMotionRequest.hasId = YES;
+  resultDetectMotionRequest.id = value;
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder*) clearId {
+  resultDetectMotionRequest.hasId = NO;
+  resultDetectMotionRequest.id = @"";
+  return self;
+}
+- (BOOL) hasUserId {
+  return resultDetectMotionRequest.hasUserId;
+}
+- (NSString*) userId {
+  return resultDetectMotionRequest.userId;
+}
+- (VLTPBDetectMotionRequestBuilder*) setUserId:(NSString*) value {
+  resultDetectMotionRequest.hasUserId = YES;
+  resultDetectMotionRequest.userId = value;
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder*) clearUserId {
+  resultDetectMotionRequest.hasUserId = NO;
+  resultDetectMotionRequest.userId = @"";
+  return self;
+}
+- (BOOL) hasSequenceIndex {
+  return resultDetectMotionRequest.hasSequenceIndex;
+}
+- (UInt32) sequenceIndex {
+  return resultDetectMotionRequest.sequenceIndex;
+}
+- (VLTPBDetectMotionRequestBuilder*) setSequenceIndex:(UInt32) value {
+  resultDetectMotionRequest.hasSequenceIndex = YES;
+  resultDetectMotionRequest.sequenceIndex = value;
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder*) clearSequenceIndex {
+  resultDetectMotionRequest.hasSequenceIndex = NO;
+  resultDetectMotionRequest.sequenceIndex = 0;
+  return self;
+}
+- (BOOL) hasPlatform {
+  return resultDetectMotionRequest.hasPlatform;
+}
+- (VLTPBPlatformType) platform {
+  return resultDetectMotionRequest.platform;
+}
+- (VLTPBDetectMotionRequestBuilder*) setPlatform:(VLTPBPlatformType) value {
+  resultDetectMotionRequest.hasPlatform = YES;
+  resultDetectMotionRequest.platform = value;
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder*) clearPlatform {
+  resultDetectMotionRequest.hasPlatform = NO;
+  resultDetectMotionRequest.platform = VLTPBPlatformTypeIos;
+  return self;
+}
+- (BOOL) hasTimestamp {
+  return resultDetectMotionRequest.hasTimestamp;
+}
+- (Float64) timestamp {
+  return resultDetectMotionRequest.timestamp;
+}
+- (VLTPBDetectMotionRequestBuilder*) setTimestamp:(Float64) value {
+  resultDetectMotionRequest.hasTimestamp = YES;
+  resultDetectMotionRequest.timestamp = value;
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder*) clearTimestamp {
+  resultDetectMotionRequest.hasTimestamp = NO;
+  resultDetectMotionRequest.timestamp = 0;
+  return self;
+}
+- (NSMutableArray *)modelName {
+  return resultDetectMotionRequest.modelNameArray;
+}
+- (NSString*)modelNameAtIndex:(NSUInteger)index {
+  return [resultDetectMotionRequest modelNameAtIndex:index];
+}
+- (VLTPBDetectMotionRequestBuilder *)addModelName:(NSString*)value {
+  if (resultDetectMotionRequest.modelNameArray == nil) {
+    resultDetectMotionRequest.modelNameArray = [[NSMutableArray alloc]init];
+  }
+  [resultDetectMotionRequest.modelNameArray addObject:value];
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder *)setModelNameArray:(NSArray *)array {
+  resultDetectMotionRequest.modelNameArray = [[NSMutableArray alloc] initWithArray:array];
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder *)clearModelName {
+  resultDetectMotionRequest.modelNameArray = nil;
+  return self;
+}
+- (NSMutableArray *)sensors {
+  return resultDetectMotionRequest.sensorsArray;
+}
+- (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index {
+  return [resultDetectMotionRequest sensorsAtIndex:index];
+}
+- (VLTPBDetectMotionRequestBuilder *)addSensors:(VLTPBSensor*)value {
+  if (resultDetectMotionRequest.sensorsArray == nil) {
+    resultDetectMotionRequest.sensorsArray = [[NSMutableArray alloc]init];
+  }
+  [resultDetectMotionRequest.sensorsArray addObject:value];
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder *)setSensorsArray:(NSArray *)array {
+  resultDetectMotionRequest.sensorsArray = [[NSMutableArray alloc]initWithArray:array];
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder *)clearSensors {
+  resultDetectMotionRequest.sensorsArray = nil;
   return self;
 }
 @end

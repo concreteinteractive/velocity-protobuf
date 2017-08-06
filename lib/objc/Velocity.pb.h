@@ -50,19 +50,21 @@
 @class PBUninterpretedOptionNamePartBuilder;
 @class VLTPBCapture;
 @class VLTPBCaptureBuilder;
+@class VLTPBDetectMotionRequest;
+@class VLTPBDetectMotionRequestBuilder;
 @class VLTPBSample;
 @class VLTPBSampleBuilder;
 @class VLTPBSensor;
 @class VLTPBSensorBuilder;
 
 
-typedef NS_ENUM(SInt32, VLTPBCapturePlatformType) {
-  VLTPBCapturePlatformTypeIos = 0,
-  VLTPBCapturePlatformTypeAndroid = 1,
+typedef NS_ENUM(SInt32, VLTPBPlatformType) {
+  VLTPBPlatformTypeIos = 0,
+  VLTPBPlatformTypeAndroid = 1,
 };
 
-BOOL VLTPBCapturePlatformTypeIsValidValue(VLTPBCapturePlatformType value);
-NSString *NSStringFromVLTPBCapturePlatformType(VLTPBCapturePlatformType value);
+BOOL VLTPBPlatformTypeIsValidValue(VLTPBPlatformType value);
+NSString *NSStringFromVLTPBPlatformType(VLTPBPlatformType value);
 
 typedef NS_ENUM(SInt32, VLTPBSensorType) {
   VLTPBSensorTypeAccel = 0,
@@ -104,7 +106,7 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
   NSString* appId;
   NSString* metadata;
   UInt32 sequenceIndex;
-  VLTPBCapturePlatformType platform;
+  VLTPBPlatformType platform;
   NSMutableArray * sensorsArray;
 }
 - (BOOL) hasImpressionId;
@@ -119,7 +121,7 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
 @property (readonly) UInt32 sequenceIndex;
 @property (readonly, strong) NSString* appId;
 @property (readonly, strong) NSString* metadata;
-@property (readonly) VLTPBCapturePlatformType platform;
+@property (readonly) VLTPBPlatformType platform;
 @property (readonly, strong) NSArray * sensors;
 @property (readonly) Float64 timestamp;
 - (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index;
@@ -185,8 +187,8 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
 - (VLTPBCaptureBuilder*) clearMetadata;
 
 - (BOOL) hasPlatform;
-- (VLTPBCapturePlatformType) platform;
-- (VLTPBCaptureBuilder*) setPlatform:(VLTPBCapturePlatformType) value;
+- (VLTPBPlatformType) platform;
+- (VLTPBCaptureBuilder*) setPlatform:(VLTPBPlatformType) value;
 - (VLTPBCaptureBuilder*) clearPlatform;
 
 - (NSMutableArray *)sensors;
@@ -320,6 +322,116 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
 - (VLTPBSampleBuilder *)setValuesArray:(NSArray *)array;
 - (VLTPBSampleBuilder *)setValuesValues:(const Float32 *)values count:(NSUInteger)count;
 - (VLTPBSampleBuilder *)clearValues;
+@end
+
+#define DetectMotionRequest_id @"id"
+#define DetectMotionRequest_userId @"userId"
+#define DetectMotionRequest_sequenceIndex @"sequenceIndex"
+#define DetectMotionRequest_platform @"platform"
+#define DetectMotionRequest_timestamp @"timestamp"
+#define DetectMotionRequest_modelName @"modelName"
+#define DetectMotionRequest_sensors @"sensors"
+@interface VLTPBDetectMotionRequest : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasTimestamp_:1;
+  BOOL hasId_:1;
+  BOOL hasUserId_:1;
+  BOOL hasSequenceIndex_:1;
+  BOOL hasPlatform_:1;
+  Float64 timestamp;
+  NSString* id;
+  NSString* userId;
+  UInt32 sequenceIndex;
+  VLTPBPlatformType platform;
+  NSMutableArray * modelNameArray;
+  NSMutableArray * sensorsArray;
+}
+- (BOOL) hasId;
+- (BOOL) hasUserId;
+- (BOOL) hasSequenceIndex;
+- (BOOL) hasPlatform;
+- (BOOL) hasTimestamp;
+@property (readonly, strong) NSString* id;
+@property (readonly, strong) NSString* userId;
+@property (readonly) UInt32 sequenceIndex;
+@property (readonly) VLTPBPlatformType platform;
+@property (readonly) Float64 timestamp;
+@property (readonly, strong) NSArray * modelName;
+@property (readonly, strong) NSArray * sensors;
+- (NSString*)modelNameAtIndex:(NSUInteger)index;
+- (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (VLTPBDetectMotionRequestBuilder*) builder;
++ (VLTPBDetectMotionRequestBuilder*) builder;
++ (VLTPBDetectMotionRequestBuilder*) builderWithPrototype:(VLTPBDetectMotionRequest*) prototype;
+- (VLTPBDetectMotionRequestBuilder*) toBuilder;
+
++ (VLTPBDetectMotionRequest*) parseFromData:(NSData*) data;
++ (VLTPBDetectMotionRequest*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBDetectMotionRequest*) parseFromInputStream:(NSInputStream*) input;
++ (VLTPBDetectMotionRequest*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBDetectMotionRequest*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (VLTPBDetectMotionRequest*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface VLTPBDetectMotionRequestBuilder : PBGeneratedMessageBuilder {
+@private
+  VLTPBDetectMotionRequest* resultDetectMotionRequest;
+}
+
+- (VLTPBDetectMotionRequest*) defaultInstance;
+
+- (VLTPBDetectMotionRequestBuilder*) clear;
+- (VLTPBDetectMotionRequestBuilder*) clone;
+
+- (VLTPBDetectMotionRequest*) build;
+- (VLTPBDetectMotionRequest*) buildPartial;
+
+- (VLTPBDetectMotionRequestBuilder*) mergeFrom:(VLTPBDetectMotionRequest*) other;
+- (VLTPBDetectMotionRequestBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (VLTPBDetectMotionRequestBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasId;
+- (NSString*) id;
+- (VLTPBDetectMotionRequestBuilder*) setId:(NSString*) value;
+- (VLTPBDetectMotionRequestBuilder*) clearId;
+
+- (BOOL) hasUserId;
+- (NSString*) userId;
+- (VLTPBDetectMotionRequestBuilder*) setUserId:(NSString*) value;
+- (VLTPBDetectMotionRequestBuilder*) clearUserId;
+
+- (BOOL) hasSequenceIndex;
+- (UInt32) sequenceIndex;
+- (VLTPBDetectMotionRequestBuilder*) setSequenceIndex:(UInt32) value;
+- (VLTPBDetectMotionRequestBuilder*) clearSequenceIndex;
+
+- (BOOL) hasPlatform;
+- (VLTPBPlatformType) platform;
+- (VLTPBDetectMotionRequestBuilder*) setPlatform:(VLTPBPlatformType) value;
+- (VLTPBDetectMotionRequestBuilder*) clearPlatform;
+
+- (BOOL) hasTimestamp;
+- (Float64) timestamp;
+- (VLTPBDetectMotionRequestBuilder*) setTimestamp:(Float64) value;
+- (VLTPBDetectMotionRequestBuilder*) clearTimestamp;
+
+- (NSMutableArray *)modelName;
+- (NSString*)modelNameAtIndex:(NSUInteger)index;
+- (VLTPBDetectMotionRequestBuilder *)addModelName:(NSString*)value;
+- (VLTPBDetectMotionRequestBuilder *)setModelNameArray:(NSArray *)array;
+- (VLTPBDetectMotionRequestBuilder *)clearModelName;
+
+- (NSMutableArray *)sensors;
+- (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index;
+- (VLTPBDetectMotionRequestBuilder *)addSensors:(VLTPBSensor*)value;
+- (VLTPBDetectMotionRequestBuilder *)setSensorsArray:(NSArray *)array;
+- (VLTPBDetectMotionRequestBuilder *)clearSensors;
 @end
 
 
