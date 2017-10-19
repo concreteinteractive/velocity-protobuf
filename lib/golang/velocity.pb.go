@@ -9,10 +9,17 @@ It is generated from these files:
 	velocity.proto
 
 It has these top-level messages:
-	Capture
 	Sensor
 	Sample
+	Capture
 	DetectMotionRequest
+	HandshakeRequest
+	HandshakeResponse
+	Request
+	ModelPrediction
+	Prediction
+	Error
+	Response
 */
 package VelocityProto
 
@@ -103,7 +110,57 @@ func (x *Sensor_Type) UnmarshalJSON(data []byte) error {
 	*x = Sensor_Type(value)
 	return nil
 }
-func (Sensor_Type) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{1, 0} }
+func (Sensor_Type) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{0, 0} }
+
+type Sensor struct {
+	Type             *Sensor_Type `protobuf:"varint,1,req,name=type,enum=VelocityProto.Sensor_Type" json:"type,omitempty"`
+	Samples          []*Sample    `protobuf:"bytes,2,rep,name=samples" json:"samples,omitempty"`
+	XXX_unrecognized []byte       `json:"-"`
+}
+
+func (m *Sensor) Reset()                    { *m = Sensor{} }
+func (m *Sensor) String() string            { return proto.CompactTextString(m) }
+func (*Sensor) ProtoMessage()               {}
+func (*Sensor) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+
+func (m *Sensor) GetType() Sensor_Type {
+	if m != nil && m.Type != nil {
+		return *m.Type
+	}
+	return Sensor_Accel
+}
+
+func (m *Sensor) GetSamples() []*Sample {
+	if m != nil {
+		return m.Samples
+	}
+	return nil
+}
+
+type Sample struct {
+	Timestamp        *float64  `protobuf:"fixed64,1,req,name=timestamp" json:"timestamp,omitempty"`
+	Values           []float32 `protobuf:"fixed32,2,rep,name=values" json:"values,omitempty"`
+	XXX_unrecognized []byte    `json:"-"`
+}
+
+func (m *Sample) Reset()                    { *m = Sample{} }
+func (m *Sample) String() string            { return proto.CompactTextString(m) }
+func (*Sample) ProtoMessage()               {}
+func (*Sample) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+
+func (m *Sample) GetTimestamp() float64 {
+	if m != nil && m.Timestamp != nil {
+		return *m.Timestamp
+	}
+	return 0
+}
+
+func (m *Sample) GetValues() []float32 {
+	if m != nil {
+		return m.Values
+	}
+	return nil
+}
 
 type Capture struct {
 	ImpressionId     *string       `protobuf:"bytes,1,opt,name=impressionId" json:"impressionId,omitempty"`
@@ -120,7 +177,7 @@ type Capture struct {
 func (m *Capture) Reset()                    { *m = Capture{} }
 func (m *Capture) String() string            { return proto.CompactTextString(m) }
 func (*Capture) ProtoMessage()               {}
-func (*Capture) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+func (*Capture) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
 
 func (m *Capture) GetImpressionId() string {
 	if m != nil && m.ImpressionId != nil {
@@ -178,64 +235,14 @@ func (m *Capture) GetTimestamp() float64 {
 	return 0
 }
 
-type Sensor struct {
-	Type             *Sensor_Type `protobuf:"varint,1,req,name=type,enum=VelocityProto.Sensor_Type" json:"type,omitempty"`
-	Samples          []*Sample    `protobuf:"bytes,2,rep,name=samples" json:"samples,omitempty"`
-	XXX_unrecognized []byte       `json:"-"`
-}
-
-func (m *Sensor) Reset()                    { *m = Sensor{} }
-func (m *Sensor) String() string            { return proto.CompactTextString(m) }
-func (*Sensor) ProtoMessage()               {}
-func (*Sensor) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
-
-func (m *Sensor) GetType() Sensor_Type {
-	if m != nil && m.Type != nil {
-		return *m.Type
-	}
-	return Sensor_Accel
-}
-
-func (m *Sensor) GetSamples() []*Sample {
-	if m != nil {
-		return m.Samples
-	}
-	return nil
-}
-
-type Sample struct {
-	Timestamp        *float64  `protobuf:"fixed64,1,req,name=timestamp" json:"timestamp,omitempty"`
-	Values           []float32 `protobuf:"fixed32,2,rep,name=values" json:"values,omitempty"`
-	XXX_unrecognized []byte    `json:"-"`
-}
-
-func (m *Sample) Reset()                    { *m = Sample{} }
-func (m *Sample) String() string            { return proto.CompactTextString(m) }
-func (*Sample) ProtoMessage()               {}
-func (*Sample) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
-
-func (m *Sample) GetTimestamp() float64 {
-	if m != nil && m.Timestamp != nil {
-		return *m.Timestamp
-	}
-	return 0
-}
-
-func (m *Sample) GetValues() []float32 {
-	if m != nil {
-		return m.Values
-	}
-	return nil
-}
-
 type DetectMotionRequest struct {
 	Id               *string       `protobuf:"bytes,1,req,name=id" json:"id,omitempty"`
 	UserId           *string       `protobuf:"bytes,2,req,name=userId" json:"userId,omitempty"`
-	SequenceIndex    *uint32       `protobuf:"varint,3,req,name=sequenceIndex" json:"sequenceIndex,omitempty"`
-	Platform         *PlatformType `protobuf:"varint,4,req,name=platform,enum=VelocityProto.PlatformType" json:"platform,omitempty"`
-	Timestamp        *float64      `protobuf:"fixed64,5,req,name=timestamp" json:"timestamp,omitempty"`
-	ModelName        []string      `protobuf:"bytes,6,rep,name=modelName" json:"modelName,omitempty"`
-	Sensors          []*Sensor     `protobuf:"bytes,7,rep,name=sensors" json:"sensors,omitempty"`
+	ModelName        []string      `protobuf:"bytes,3,rep,name=modelName" json:"modelName,omitempty"`
+	Sensors          []*Sensor     `protobuf:"bytes,4,rep,name=sensors" json:"sensors,omitempty"`
+	SequenceIndex    *uint32       `protobuf:"varint,5,req,name=sequenceIndex" json:"sequenceIndex,omitempty"`
+	Platform         *PlatformType `protobuf:"varint,6,req,name=platform,enum=VelocityProto.PlatformType" json:"platform,omitempty"`
+	Timestamp        *float64      `protobuf:"fixed64,7,req,name=timestamp" json:"timestamp,omitempty"`
 	XXX_unrecognized []byte        `json:"-"`
 }
 
@@ -256,6 +263,20 @@ func (m *DetectMotionRequest) GetUserId() string {
 		return *m.UserId
 	}
 	return ""
+}
+
+func (m *DetectMotionRequest) GetModelName() []string {
+	if m != nil {
+		return m.ModelName
+	}
+	return nil
+}
+
+func (m *DetectMotionRequest) GetSensors() []*Sensor {
+	if m != nil {
+		return m.Sensors
+	}
+	return nil
 }
 
 func (m *DetectMotionRequest) GetSequenceIndex() uint32 {
@@ -279,25 +300,249 @@ func (m *DetectMotionRequest) GetTimestamp() float64 {
 	return 0
 }
 
-func (m *DetectMotionRequest) GetModelName() []string {
-	if m != nil {
-		return m.ModelName
-	}
-	return nil
+type HandshakeRequest struct {
+	AuthToken        *string       `protobuf:"bytes,1,opt,name=authToken" json:"authToken,omitempty"`
+	Idfa             *string       `protobuf:"bytes,2,opt,name=idfa" json:"idfa,omitempty"`
+	UserId           *string       `protobuf:"bytes,3,opt,name=userId" json:"userId,omitempty"`
+	AppId            *string       `protobuf:"bytes,4,opt,name=appId" json:"appId,omitempty"`
+	Platform         *PlatformType `protobuf:"varint,5,opt,name=platform,enum=VelocityProto.PlatformType" json:"platform,omitempty"`
+	XXX_unrecognized []byte        `json:"-"`
 }
 
-func (m *DetectMotionRequest) GetSensors() []*Sensor {
+func (m *HandshakeRequest) Reset()                    { *m = HandshakeRequest{} }
+func (m *HandshakeRequest) String() string            { return proto.CompactTextString(m) }
+func (*HandshakeRequest) ProtoMessage()               {}
+func (*HandshakeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
+
+func (m *HandshakeRequest) GetAuthToken() string {
+	if m != nil && m.AuthToken != nil {
+		return *m.AuthToken
+	}
+	return ""
+}
+
+func (m *HandshakeRequest) GetIdfa() string {
+	if m != nil && m.Idfa != nil {
+		return *m.Idfa
+	}
+	return ""
+}
+
+func (m *HandshakeRequest) GetUserId() string {
+	if m != nil && m.UserId != nil {
+		return *m.UserId
+	}
+	return ""
+}
+
+func (m *HandshakeRequest) GetAppId() string {
+	if m != nil && m.AppId != nil {
+		return *m.AppId
+	}
+	return ""
+}
+
+func (m *HandshakeRequest) GetPlatform() PlatformType {
+	if m != nil && m.Platform != nil {
+		return *m.Platform
+	}
+	return PlatformType_IOS
+}
+
+type HandshakeResponse struct {
+	SampleSize       *float64 `protobuf:"fixed64,1,opt,name=sampleSize" json:"sampleSize,omitempty"`
+	CaptureInterval  *float64 `protobuf:"fixed64,2,opt,name=captureInterval" json:"captureInterval,omitempty"`
+	CanDetectMotion  *bool    `protobuf:"varint,3,opt,name=canDetectMotion" json:"canDetectMotion,omitempty"`
+	CanLabelMotion   *bool    `protobuf:"varint,4,opt,name=canLabelMotion" json:"canLabelMotion,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
+}
+
+func (m *HandshakeResponse) Reset()                    { *m = HandshakeResponse{} }
+func (m *HandshakeResponse) String() string            { return proto.CompactTextString(m) }
+func (*HandshakeResponse) ProtoMessage()               {}
+func (*HandshakeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+
+func (m *HandshakeResponse) GetSampleSize() float64 {
+	if m != nil && m.SampleSize != nil {
+		return *m.SampleSize
+	}
+	return 0
+}
+
+func (m *HandshakeResponse) GetCaptureInterval() float64 {
+	if m != nil && m.CaptureInterval != nil {
+		return *m.CaptureInterval
+	}
+	return 0
+}
+
+func (m *HandshakeResponse) GetCanDetectMotion() bool {
+	if m != nil && m.CanDetectMotion != nil {
+		return *m.CanDetectMotion
+	}
+	return false
+}
+
+func (m *HandshakeResponse) GetCanLabelMotion() bool {
+	if m != nil && m.CanLabelMotion != nil {
+		return *m.CanLabelMotion
+	}
+	return false
+}
+
+type Request struct {
+	Sensors          []*Sensor `protobuf:"bytes,1,rep,name=sensors" json:"sensors,omitempty"`
+	ModelNames       []string  `protobuf:"bytes,2,rep,name=modelNames" json:"modelNames,omitempty"`
+	SessionId        *string   `protobuf:"bytes,3,opt,name=sessionId" json:"sessionId,omitempty"`
+	XXX_unrecognized []byte    `json:"-"`
+}
+
+func (m *Request) Reset()                    { *m = Request{} }
+func (m *Request) String() string            { return proto.CompactTextString(m) }
+func (*Request) ProtoMessage()               {}
+func (*Request) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{6} }
+
+func (m *Request) GetSensors() []*Sensor {
 	if m != nil {
 		return m.Sensors
 	}
 	return nil
 }
 
+func (m *Request) GetModelNames() []string {
+	if m != nil {
+		return m.ModelNames
+	}
+	return nil
+}
+
+func (m *Request) GetSessionId() string {
+	if m != nil && m.SessionId != nil {
+		return *m.SessionId
+	}
+	return ""
+}
+
+type ModelPrediction struct {
+	ModelName        *string       `protobuf:"bytes,1,req,name=modelName" json:"modelName,omitempty"`
+	Predictions      []*Prediction `protobuf:"bytes,2,rep,name=predictions" json:"predictions,omitempty"`
+	XXX_unrecognized []byte        `json:"-"`
+}
+
+func (m *ModelPrediction) Reset()                    { *m = ModelPrediction{} }
+func (m *ModelPrediction) String() string            { return proto.CompactTextString(m) }
+func (*ModelPrediction) ProtoMessage()               {}
+func (*ModelPrediction) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{7} }
+
+func (m *ModelPrediction) GetModelName() string {
+	if m != nil && m.ModelName != nil {
+		return *m.ModelName
+	}
+	return ""
+}
+
+func (m *ModelPrediction) GetPredictions() []*Prediction {
+	if m != nil {
+		return m.Predictions
+	}
+	return nil
+}
+
+type Prediction struct {
+	Name             *string  `protobuf:"bytes,1,req,name=name" json:"name,omitempty"`
+	Confidence       *float32 `protobuf:"fixed32,2,opt,name=confidence" json:"confidence,omitempty"`
+	Timestamp        *float64 `protobuf:"fixed64,3,opt,name=timestamp" json:"timestamp,omitempty"`
+	XXX_unrecognized []byte   `json:"-"`
+}
+
+func (m *Prediction) Reset()                    { *m = Prediction{} }
+func (m *Prediction) String() string            { return proto.CompactTextString(m) }
+func (*Prediction) ProtoMessage()               {}
+func (*Prediction) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
+
+func (m *Prediction) GetName() string {
+	if m != nil && m.Name != nil {
+		return *m.Name
+	}
+	return ""
+}
+
+func (m *Prediction) GetConfidence() float32 {
+	if m != nil && m.Confidence != nil {
+		return *m.Confidence
+	}
+	return 0
+}
+
+func (m *Prediction) GetTimestamp() float64 {
+	if m != nil && m.Timestamp != nil {
+		return *m.Timestamp
+	}
+	return 0
+}
+
+type Error struct {
+	ErrorMessage     *string `protobuf:"bytes,1,req,name=errorMessage" json:"errorMessage,omitempty"`
+	ErrorCode        *string `protobuf:"bytes,2,opt,name=errorCode" json:"errorCode,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *Error) Reset()                    { *m = Error{} }
+func (m *Error) String() string            { return proto.CompactTextString(m) }
+func (*Error) ProtoMessage()               {}
+func (*Error) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
+
+func (m *Error) GetErrorMessage() string {
+	if m != nil && m.ErrorMessage != nil {
+		return *m.ErrorMessage
+	}
+	return ""
+}
+
+func (m *Error) GetErrorCode() string {
+	if m != nil && m.ErrorCode != nil {
+		return *m.ErrorCode
+	}
+	return ""
+}
+
+type Response struct {
+	ModelPredictions []*ModelPrediction `protobuf:"bytes,1,rep,name=modelPredictions" json:"modelPredictions,omitempty"`
+	Error            *Error             `protobuf:"bytes,2,opt,name=error" json:"error,omitempty"`
+	XXX_unrecognized []byte             `json:"-"`
+}
+
+func (m *Response) Reset()                    { *m = Response{} }
+func (m *Response) String() string            { return proto.CompactTextString(m) }
+func (*Response) ProtoMessage()               {}
+func (*Response) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{10} }
+
+func (m *Response) GetModelPredictions() []*ModelPrediction {
+	if m != nil {
+		return m.ModelPredictions
+	}
+	return nil
+}
+
+func (m *Response) GetError() *Error {
+	if m != nil {
+		return m.Error
+	}
+	return nil
+}
+
 func init() {
-	proto.RegisterType((*Capture)(nil), "VelocityProto.Capture")
 	proto.RegisterType((*Sensor)(nil), "VelocityProto.Sensor")
 	proto.RegisterType((*Sample)(nil), "VelocityProto.Sample")
+	proto.RegisterType((*Capture)(nil), "VelocityProto.Capture")
 	proto.RegisterType((*DetectMotionRequest)(nil), "VelocityProto.DetectMotionRequest")
+	proto.RegisterType((*HandshakeRequest)(nil), "VelocityProto.HandshakeRequest")
+	proto.RegisterType((*HandshakeResponse)(nil), "VelocityProto.HandshakeResponse")
+	proto.RegisterType((*Request)(nil), "VelocityProto.Request")
+	proto.RegisterType((*ModelPrediction)(nil), "VelocityProto.ModelPrediction")
+	proto.RegisterType((*Prediction)(nil), "VelocityProto.Prediction")
+	proto.RegisterType((*Error)(nil), "VelocityProto.Error")
+	proto.RegisterType((*Response)(nil), "VelocityProto.Response")
 	proto.RegisterEnum("VelocityProto.PlatformType", PlatformType_name, PlatformType_value)
 	proto.RegisterEnum("VelocityProto.Sensor_Type", Sensor_Type_name, Sensor_Type_value)
 }
@@ -305,30 +550,45 @@ func init() {
 func init() { proto.RegisterFile("velocity.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 386 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x8c, 0x91, 0xd1, 0x8a, 0x13, 0x31,
-	0x14, 0x86, 0x37, 0x99, 0xe9, 0x4c, 0xe7, 0x74, 0x5b, 0x66, 0xa3, 0x0b, 0x41, 0x6f, 0x86, 0x41,
-	0x24, 0x28, 0xdb, 0x8b, 0x7d, 0x83, 0x45, 0x61, 0x99, 0x8b, 0xd5, 0x62, 0xc5, 0xfb, 0x30, 0x39,
-	0x2b, 0x81, 0xc9, 0x24, 0x26, 0xe9, 0x62, 0x1f, 0xc1, 0x07, 0xf3, 0xd6, 0x67, 0x92, 0x89, 0x45,
-	0xac, 0x14, 0xdd, 0xbb, 0x9c, 0xfc, 0xe7, 0x3f, 0xff, 0xc7, 0x39, 0xb0, 0x7a, 0xc0, 0xc1, 0xf6,
-	0x3a, 0xee, 0xd7, 0xce, 0xdb, 0x68, 0xd9, 0xf2, 0xd3, 0xa1, 0xde, 0x4c, 0x65, 0xfb, 0x83, 0x40,
-	0xf9, 0x46, 0xba, 0xb8, 0xf3, 0xc8, 0x9e, 0xc2, 0xb9, 0x36, 0xce, 0x63, 0x08, 0xda, 0x8e, 0x9d,
-	0xe2, 0xa4, 0x21, 0xa2, 0x62, 0x0b, 0xc8, 0xf4, 0xbd, 0xe4, 0xb4, 0xa1, 0xa2, 0x62, 0x97, 0xb0,
-	0x0c, 0xf8, 0x65, 0x87, 0x63, 0x8f, 0xdd, 0xa8, 0xf0, 0x2b, 0xcf, 0x1a, 0x2a, 0x96, 0x6c, 0x09,
-	0x33, 0xe9, 0x5c, 0xa7, 0x78, 0x9e, 0x2c, 0x35, 0xcc, 0x0d, 0x46, 0xa9, 0x64, 0x94, 0x7c, 0x96,
-	0x7e, 0xae, 0x60, 0xee, 0x06, 0x19, 0xef, 0xad, 0x37, 0xbc, 0x68, 0xa8, 0x58, 0x5d, 0x3f, 0x5f,
-	0x1f, 0x81, 0xac, 0x37, 0x07, 0xf9, 0xe3, 0xde, 0x21, 0x7b, 0x09, 0x65, 0xc0, 0x31, 0x58, 0x1f,
-	0x78, 0xd9, 0x64, 0x62, 0x71, 0x7d, 0xf9, 0x57, 0xf7, 0x36, 0xa9, 0xec, 0x02, 0xaa, 0xa8, 0x0d,
-	0x86, 0x28, 0x8d, 0xe3, 0xf3, 0x86, 0x0a, 0xd2, 0x7e, 0x23, 0x50, 0x1c, 0x54, 0x01, 0x79, 0xdc,
-	0x3b, 0xe4, 0x24, 0x05, 0x3e, 0x3b, 0x39, 0x62, 0xfd, 0x3b, 0x4f, 0x1a, 0x37, 0x60, 0xe0, 0xf4,
-	0x74, 0x5e, 0x52, 0xdb, 0x2b, 0xc8, 0x53, 0x7f, 0x05, 0xb3, 0x9b, 0xbe, 0xc7, 0xa1, 0x3e, 0x63,
-	0x73, 0xc8, 0x6f, 0xf7, 0xde, 0xd6, 0x84, 0x95, 0x90, 0xdd, 0xc9, 0xcf, 0x35, 0x9d, 0x1e, 0xb7,
-	0x9b, 0x6d, 0x9d, 0xb5, 0xaf, 0xa1, 0xf8, 0x65, 0x3c, 0x06, 0x9d, 0x78, 0x08, 0x5b, 0x41, 0xf1,
-	0x20, 0x87, 0xdd, 0x21, 0x92, 0xb6, 0xdf, 0x09, 0x3c, 0x79, 0x8b, 0x11, 0xfb, 0x78, 0x67, 0xa3,
-	0xb6, 0xe3, 0x87, 0x69, 0xcf, 0x21, 0x32, 0x00, 0xaa, 0x55, 0xf2, 0x54, 0x93, 0x67, 0x17, 0xd0,
-	0x77, 0xea, 0xdf, 0xe7, 0xf8, 0x73, 0xdb, 0xf9, 0xff, 0xb7, 0x7d, 0x04, 0x37, 0x4b, 0x70, 0x17,
-	0x50, 0x19, 0xab, 0x70, 0x78, 0x27, 0x0d, 0xf2, 0xa2, 0xc9, 0x44, 0xf5, 0xd8, 0x9b, 0xbc, 0x7a,
-	0x01, 0xe7, 0x47, 0xd3, 0x4b, 0xc8, 0xba, 0xf7, 0xdb, 0xfa, 0x8c, 0x2d, 0xa0, 0xbc, 0x19, 0x95,
-	0xb7, 0x5a, 0xd5, 0xe4, 0x67, 0x00, 0x00, 0x00, 0xff, 0xff, 0x70, 0xc4, 0xf2, 0xe0, 0x97, 0x02,
-	0x00, 0x00,
+	// 630 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x53, 0x4d, 0x6f, 0xd3, 0x3e,
+	0x18, 0x9f, 0x93, 0xb6, 0x49, 0x9e, 0xbe, 0x2c, 0xf5, 0x7f, 0xfb, 0x13, 0x40, 0x42, 0x55, 0x40,
+	0x28, 0x02, 0xad, 0x42, 0x3b, 0x71, 0x9d, 0x06, 0x1a, 0x95, 0x28, 0x54, 0x74, 0x42, 0x5c, 0x4d,
+	0xfc, 0x6c, 0x8b, 0x96, 0xd8, 0x59, 0xec, 0x4e, 0x94, 0x1b, 0x47, 0x3e, 0x18, 0x57, 0x3e, 0x13,
+	0x8a, 0x93, 0x96, 0x26, 0xa0, 0x49, 0xdc, 0x62, 0xfb, 0x97, 0xc7, 0xbf, 0x37, 0xc3, 0xe8, 0x16,
+	0x53, 0x19, 0x27, 0x7a, 0x3d, 0xcd, 0x0b, 0xa9, 0x25, 0x1d, 0x7e, 0xac, 0xd7, 0x8b, 0x72, 0x19,
+	0x7e, 0x27, 0xd0, 0x5b, 0xa2, 0x50, 0xb2, 0xa0, 0x11, 0x74, 0xf4, 0x3a, 0xc7, 0x80, 0x4c, 0xac,
+	0x68, 0x74, 0xfc, 0x60, 0xda, 0x00, 0x4e, 0x2b, 0xd0, 0xf4, 0x7c, 0x9d, 0x23, 0x7d, 0x0a, 0x8e,
+	0x62, 0x59, 0x9e, 0xa2, 0x0a, 0xac, 0x89, 0x1d, 0xf5, 0x8f, 0x0f, 0xdb, 0x60, 0x73, 0x1a, 0x1e,
+	0x41, 0xc7, 0xe0, 0x3d, 0xe8, 0x9e, 0xc4, 0x31, 0xa6, 0xfe, 0x1e, 0x75, 0xa1, 0x73, 0xb6, 0x2e,
+	0xa4, 0x4f, 0xa8, 0x03, 0xf6, 0x9c, 0x5d, 0xfa, 0x56, 0xf9, 0x71, 0xb6, 0x58, 0xfa, 0x76, 0xf8,
+	0x1c, 0x7a, 0xd5, 0x8f, 0x74, 0x0c, 0x9e, 0x4e, 0x32, 0x54, 0x9a, 0x65, 0xb9, 0xe1, 0x43, 0xe8,
+	0x08, 0x7a, 0xb7, 0x2c, 0x5d, 0xd5, 0x57, 0x5a, 0xe1, 0x4f, 0x02, 0xce, 0x29, 0xcb, 0xf5, 0xaa,
+	0x40, 0x7a, 0x00, 0x83, 0x24, 0xcb, 0x0b, 0x54, 0x2a, 0x91, 0x62, 0xc6, 0x03, 0x32, 0x21, 0x91,
+	0x47, 0xfb, 0x60, 0x27, 0x17, 0x2c, 0xb0, 0x26, 0x56, 0xe4, 0xd1, 0x43, 0x18, 0x2a, 0xbc, 0x59,
+	0xa1, 0x88, 0x71, 0x26, 0x38, 0x7e, 0x09, 0xec, 0x89, 0x15, 0x0d, 0xe9, 0x10, 0xba, 0x2c, 0xcf,
+	0x67, 0x3c, 0xe8, 0x98, 0x5f, 0x7c, 0x70, 0x33, 0xd4, 0x8c, 0x33, 0xcd, 0x82, 0xae, 0xd9, 0x39,
+	0x02, 0x37, 0x4f, 0x99, 0xbe, 0x90, 0x45, 0x16, 0xf4, 0x8c, 0x31, 0x0f, 0x5b, 0x5a, 0x17, 0xf5,
+	0xf1, 0xd6, 0x19, 0x63, 0x94, 0x0a, 0x9c, 0xbf, 0x3b, 0x53, 0x79, 0xdd, 0x10, 0xe8, 0x96, 0x02,
+	0xc3, 0x1f, 0x04, 0xfe, 0x7b, 0x85, 0x1a, 0x63, 0x3d, 0x97, 0x3a, 0x91, 0xe2, 0x43, 0x49, 0x57,
+	0x69, 0x0a, 0x60, 0x25, 0xdc, 0x98, 0xe0, 0x95, 0x26, 0xac, 0x14, 0x16, 0x33, 0x5e, 0xab, 0x1a,
+	0x83, 0x97, 0x49, 0x8e, 0xe9, 0x3b, 0x96, 0x61, 0x60, 0x4f, 0xec, 0xc8, 0xdb, 0x65, 0xd0, 0xb9,
+	0x8b, 0xc1, 0x1f, 0x86, 0x74, 0x8d, 0x21, 0xff, 0xa8, 0xb7, 0xa1, 0xc3, 0x31, 0x3a, 0xbe, 0x11,
+	0xf0, 0xdf, 0x30, 0xc1, 0xd5, 0x15, 0xbb, 0xc6, 0x8d, 0x88, 0x31, 0x78, 0x6c, 0xa5, 0xaf, 0xce,
+	0xe5, 0x35, 0x8a, 0x3a, 0x9e, 0x01, 0x74, 0x12, 0x6e, 0xf2, 0x21, 0x0d, 0x65, 0xb6, 0x59, 0xb7,
+	0x82, 0xd9, 0xa5, 0x55, 0x06, 0x73, 0x37, 0xad, 0xf0, 0x06, 0xc6, 0x3b, 0x14, 0x54, 0x2e, 0x85,
+	0x42, 0x4a, 0x01, 0xaa, 0xd6, 0x2e, 0x93, 0xaf, 0x68, 0x48, 0x10, 0x7a, 0x0f, 0xf6, 0xe3, 0xaa,
+	0x44, 0x33, 0xa1, 0xb1, 0xb8, 0x65, 0xa9, 0xe1, 0x53, 0x1f, 0x88, 0xdd, 0x3c, 0x0c, 0x31, 0x97,
+	0xfe, 0x0f, 0xa3, 0x98, 0x89, 0xb7, 0xec, 0x33, 0xa6, 0xf5, 0x7e, 0xc9, 0xd0, 0x0d, 0x3f, 0x81,
+	0xb3, 0x11, 0xbb, 0x13, 0x01, 0xb9, 0x2b, 0x02, 0x0a, 0xb0, 0x4d, 0xaf, 0xaa, 0xb5, 0x49, 0x54,
+	0x6d, 0x7b, 0x6c, 0xac, 0x08, 0xcf, 0x61, 0x7f, 0x5e, 0xc2, 0x16, 0x05, 0xf2, 0x24, 0x2e, 0xaf,
+	0x6c, 0xe6, 0x5e, 0x55, 0x63, 0x0a, 0xfd, 0x7c, 0x0b, 0xd8, 0xbc, 0xcb, 0xfb, 0x6d, 0x93, 0xb6,
+	0x88, 0xf0, 0x04, 0x60, 0x67, 0xe0, 0x00, 0x3a, 0xe2, 0xf7, 0x2c, 0x0a, 0x10, 0x4b, 0x71, 0x91,
+	0xf0, 0xb2, 0x1d, 0xc6, 0x10, 0xab, 0x99, 0x74, 0x49, 0x8c, 0x84, 0x2f, 0xa0, 0xfb, 0xba, 0x28,
+	0x64, 0x51, 0xbe, 0x3f, 0x2c, 0x3f, 0xe6, 0xa8, 0x14, 0xbb, 0xdc, 0x4c, 0x19, 0x83, 0x67, 0x76,
+	0x4f, 0x25, 0xaf, 0x86, 0x78, 0x61, 0x02, 0xee, 0x36, 0x8e, 0x97, 0xe0, 0x67, 0x4d, 0x59, 0x1b,
+	0xbb, 0x1e, 0xb5, 0x58, 0xb7, 0xd5, 0x3f, 0x86, 0xae, 0x19, 0x6c, 0x86, 0xf6, 0x8f, 0x0f, 0x5a,
+	0x70, 0xc3, 0xe9, 0xd9, 0x13, 0x18, 0x34, 0x9a, 0xea, 0x80, 0x3d, 0x7b, 0xbf, 0xf4, 0xf7, 0x68,
+	0x1f, 0x9c, 0x13, 0xc1, 0x0b, 0x99, 0x70, 0x9f, 0xfc, 0x0a, 0x00, 0x00, 0xff, 0xff, 0xf7, 0x49,
+	0xe2, 0xaf, 0x1e, 0x05, 0x00, 0x00,
 }

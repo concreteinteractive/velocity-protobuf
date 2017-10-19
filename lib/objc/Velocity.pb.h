@@ -52,6 +52,20 @@
 @class VLTPBCaptureBuilder;
 @class VLTPBDetectMotionRequest;
 @class VLTPBDetectMotionRequestBuilder;
+@class VLTPBError;
+@class VLTPBErrorBuilder;
+@class VLTPBHandshakeRequest;
+@class VLTPBHandshakeRequestBuilder;
+@class VLTPBHandshakeResponse;
+@class VLTPBHandshakeResponseBuilder;
+@class VLTPBModelPrediction;
+@class VLTPBModelPredictionBuilder;
+@class VLTPBPrediction;
+@class VLTPBPredictionBuilder;
+@class VLTPBRequest;
+@class VLTPBRequestBuilder;
+@class VLTPBResponse;
+@class VLTPBResponseBuilder;
 @class VLTPBSample;
 @class VLTPBSampleBuilder;
 @class VLTPBSensor;
@@ -81,6 +95,127 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
 }
 + (PBExtensionRegistry*) extensionRegistry;
 + (void) registerAllExtensions:(PBMutableExtensionRegistry*) registry;
+@end
+
+#define Sensor_type @"type"
+#define Sensor_samples @"samples"
+@interface VLTPBSensor : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasType_:1;
+  VLTPBSensorType type;
+  NSMutableArray * samplesArray;
+}
+- (BOOL) hasType;
+@property (readonly) VLTPBSensorType type;
+@property (readonly, strong) NSArray<VLTPBSample*> * samples;
+- (VLTPBSample*)samplesAtIndex:(NSUInteger)index;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (VLTPBSensorBuilder*) builder;
++ (VLTPBSensorBuilder*) builder;
++ (VLTPBSensorBuilder*) builderWithPrototype:(VLTPBSensor*) prototype;
+- (VLTPBSensorBuilder*) toBuilder;
+
++ (VLTPBSensor*) parseFromData:(NSData*) data;
++ (VLTPBSensor*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBSensor*) parseFromInputStream:(NSInputStream*) input;
++ (VLTPBSensor*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBSensor*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (VLTPBSensor*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface VLTPBSensorBuilder : PBGeneratedMessageBuilder {
+@private
+  VLTPBSensor* resultSensor;
+}
+
+- (VLTPBSensor*) defaultInstance;
+
+- (VLTPBSensorBuilder*) clear;
+- (VLTPBSensorBuilder*) clone;
+
+- (VLTPBSensor*) build;
+- (VLTPBSensor*) buildPartial;
+
+- (VLTPBSensorBuilder*) mergeFrom:(VLTPBSensor*) other;
+- (VLTPBSensorBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (VLTPBSensorBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasType;
+- (VLTPBSensorType) type;
+- (VLTPBSensorBuilder*) setType:(VLTPBSensorType) value;
+- (VLTPBSensorBuilder*) clearType;
+
+- (NSMutableArray<VLTPBSample*> *)samples;
+- (VLTPBSample*)samplesAtIndex:(NSUInteger)index;
+- (VLTPBSensorBuilder *)addSamples:(VLTPBSample*)value;
+- (VLTPBSensorBuilder *)setSamplesArray:(NSArray<VLTPBSample*> *)array;
+- (VLTPBSensorBuilder *)clearSamples;
+@end
+
+#define Sample_timestamp @"timestamp"
+#define Sample_values @"values"
+@interface VLTPBSample : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasTimestamp_:1;
+  Float64 timestamp;
+  PBAppendableArray * valuesArray;
+}
+- (BOOL) hasTimestamp;
+@property (readonly) Float64 timestamp;
+@property (readonly, strong) PBArray * values;
+- (Float32)valuesAtIndex:(NSUInteger)index;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (VLTPBSampleBuilder*) builder;
++ (VLTPBSampleBuilder*) builder;
++ (VLTPBSampleBuilder*) builderWithPrototype:(VLTPBSample*) prototype;
+- (VLTPBSampleBuilder*) toBuilder;
+
++ (VLTPBSample*) parseFromData:(NSData*) data;
++ (VLTPBSample*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBSample*) parseFromInputStream:(NSInputStream*) input;
++ (VLTPBSample*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBSample*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (VLTPBSample*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface VLTPBSampleBuilder : PBGeneratedMessageBuilder {
+@private
+  VLTPBSample* resultSample;
+}
+
+- (VLTPBSample*) defaultInstance;
+
+- (VLTPBSampleBuilder*) clear;
+- (VLTPBSampleBuilder*) clone;
+
+- (VLTPBSample*) build;
+- (VLTPBSample*) buildPartial;
+
+- (VLTPBSampleBuilder*) mergeFrom:(VLTPBSample*) other;
+- (VLTPBSampleBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (VLTPBSampleBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasTimestamp;
+- (Float64) timestamp;
+- (VLTPBSampleBuilder*) setTimestamp:(Float64) value;
+- (VLTPBSampleBuilder*) clearTimestamp;
+
+- (PBAppendableArray *)values;
+- (Float32)valuesAtIndex:(NSUInteger)index;
+- (VLTPBSampleBuilder *)addValues:(Float32)value;
+- (VLTPBSampleBuilder *)setValuesArray:(NSArray *)array;
+- (VLTPBSampleBuilder *)setValuesValues:(const Float32 *)values count:(NSUInteger)count;
+- (VLTPBSampleBuilder *)clearValues;
 @end
 
 #define Capture_impressionId @"impressionId"
@@ -122,7 +257,7 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
 @property (readonly, strong) NSString* appId;
 @property (readonly, strong) NSString* metadata;
 @property (readonly) VLTPBPlatformType platform;
-@property (readonly, strong) NSArray * sensors;
+@property (readonly, strong) NSArray<VLTPBSensor*> * sensors;
 @property (readonly) Float64 timestamp;
 - (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index;
 
@@ -191,10 +326,10 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
 - (VLTPBCaptureBuilder*) setPlatform:(VLTPBPlatformType) value;
 - (VLTPBCaptureBuilder*) clearPlatform;
 
-- (NSMutableArray *)sensors;
+- (NSMutableArray<VLTPBSensor*> *)sensors;
 - (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index;
 - (VLTPBCaptureBuilder *)addSensors:(VLTPBSensor*)value;
-- (VLTPBCaptureBuilder *)setSensorsArray:(NSArray *)array;
+- (VLTPBCaptureBuilder *)setSensorsArray:(NSArray<VLTPBSensor*> *)array;
 - (VLTPBCaptureBuilder *)clearSensors;
 
 - (BOOL) hasTimestamp;
@@ -203,134 +338,13 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
 - (VLTPBCaptureBuilder*) clearTimestamp;
 @end
 
-#define Sensor_type @"type"
-#define Sensor_samples @"samples"
-@interface VLTPBSensor : PBGeneratedMessage<GeneratedMessageProtocol> {
-@private
-  BOOL hasType_:1;
-  VLTPBSensorType type;
-  NSMutableArray * samplesArray;
-}
-- (BOOL) hasType;
-@property (readonly) VLTPBSensorType type;
-@property (readonly, strong) NSArray * samples;
-- (VLTPBSample*)samplesAtIndex:(NSUInteger)index;
-
-+ (instancetype) defaultInstance;
-- (instancetype) defaultInstance;
-
-- (BOOL) isInitialized;
-- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
-- (VLTPBSensorBuilder*) builder;
-+ (VLTPBSensorBuilder*) builder;
-+ (VLTPBSensorBuilder*) builderWithPrototype:(VLTPBSensor*) prototype;
-- (VLTPBSensorBuilder*) toBuilder;
-
-+ (VLTPBSensor*) parseFromData:(NSData*) data;
-+ (VLTPBSensor*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (VLTPBSensor*) parseFromInputStream:(NSInputStream*) input;
-+ (VLTPBSensor*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (VLTPBSensor*) parseFromCodedInputStream:(PBCodedInputStream*) input;
-+ (VLTPBSensor*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-@end
-
-@interface VLTPBSensorBuilder : PBGeneratedMessageBuilder {
-@private
-  VLTPBSensor* resultSensor;
-}
-
-- (VLTPBSensor*) defaultInstance;
-
-- (VLTPBSensorBuilder*) clear;
-- (VLTPBSensorBuilder*) clone;
-
-- (VLTPBSensor*) build;
-- (VLTPBSensor*) buildPartial;
-
-- (VLTPBSensorBuilder*) mergeFrom:(VLTPBSensor*) other;
-- (VLTPBSensorBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
-- (VLTPBSensorBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-
-- (BOOL) hasType;
-- (VLTPBSensorType) type;
-- (VLTPBSensorBuilder*) setType:(VLTPBSensorType) value;
-- (VLTPBSensorBuilder*) clearType;
-
-- (NSMutableArray *)samples;
-- (VLTPBSample*)samplesAtIndex:(NSUInteger)index;
-- (VLTPBSensorBuilder *)addSamples:(VLTPBSample*)value;
-- (VLTPBSensorBuilder *)setSamplesArray:(NSArray *)array;
-- (VLTPBSensorBuilder *)clearSamples;
-@end
-
-#define Sample_timestamp @"timestamp"
-#define Sample_values @"values"
-@interface VLTPBSample : PBGeneratedMessage<GeneratedMessageProtocol> {
-@private
-  BOOL hasTimestamp_:1;
-  Float64 timestamp;
-  PBAppendableArray * valuesArray;
-}
-- (BOOL) hasTimestamp;
-@property (readonly) Float64 timestamp;
-@property (readonly, strong) PBArray * values;
-- (Float32)valuesAtIndex:(NSUInteger)index;
-
-+ (instancetype) defaultInstance;
-- (instancetype) defaultInstance;
-
-- (BOOL) isInitialized;
-- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
-- (VLTPBSampleBuilder*) builder;
-+ (VLTPBSampleBuilder*) builder;
-+ (VLTPBSampleBuilder*) builderWithPrototype:(VLTPBSample*) prototype;
-- (VLTPBSampleBuilder*) toBuilder;
-
-+ (VLTPBSample*) parseFromData:(NSData*) data;
-+ (VLTPBSample*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (VLTPBSample*) parseFromInputStream:(NSInputStream*) input;
-+ (VLTPBSample*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (VLTPBSample*) parseFromCodedInputStream:(PBCodedInputStream*) input;
-+ (VLTPBSample*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-@end
-
-@interface VLTPBSampleBuilder : PBGeneratedMessageBuilder {
-@private
-  VLTPBSample* resultSample;
-}
-
-- (VLTPBSample*) defaultInstance;
-
-- (VLTPBSampleBuilder*) clear;
-- (VLTPBSampleBuilder*) clone;
-
-- (VLTPBSample*) build;
-- (VLTPBSample*) buildPartial;
-
-- (VLTPBSampleBuilder*) mergeFrom:(VLTPBSample*) other;
-- (VLTPBSampleBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
-- (VLTPBSampleBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-
-- (BOOL) hasTimestamp;
-- (Float64) timestamp;
-- (VLTPBSampleBuilder*) setTimestamp:(Float64) value;
-- (VLTPBSampleBuilder*) clearTimestamp;
-
-- (PBAppendableArray *)values;
-- (Float32)valuesAtIndex:(NSUInteger)index;
-- (VLTPBSampleBuilder *)addValues:(Float32)value;
-- (VLTPBSampleBuilder *)setValuesArray:(NSArray *)array;
-- (VLTPBSampleBuilder *)setValuesValues:(const Float32 *)values count:(NSUInteger)count;
-- (VLTPBSampleBuilder *)clearValues;
-@end
-
 #define DetectMotionRequest_id @"id"
 #define DetectMotionRequest_userId @"userId"
+#define DetectMotionRequest_modelName @"modelName"
+#define DetectMotionRequest_sensors @"sensors"
 #define DetectMotionRequest_sequenceIndex @"sequenceIndex"
 #define DetectMotionRequest_platform @"platform"
 #define DetectMotionRequest_timestamp @"timestamp"
-#define DetectMotionRequest_modelName @"modelName"
-#define DetectMotionRequest_sensors @"sensors"
 @interface VLTPBDetectMotionRequest : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasTimestamp_:1;
@@ -353,11 +367,11 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
 - (BOOL) hasTimestamp;
 @property (readonly, strong) NSString* id;
 @property (readonly, strong) NSString* userId;
+@property (readonly, strong) NSArray * modelName;
+@property (readonly, strong) NSArray<VLTPBSensor*> * sensors;
 @property (readonly) UInt32 sequenceIndex;
 @property (readonly) VLTPBPlatformType platform;
 @property (readonly) Float64 timestamp;
-@property (readonly, strong) NSArray * modelName;
-@property (readonly, strong) NSArray * sensors;
 - (NSString*)modelNameAtIndex:(NSUInteger)index;
 - (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index;
 
@@ -406,6 +420,18 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
 - (VLTPBDetectMotionRequestBuilder*) setUserId:(NSString*) value;
 - (VLTPBDetectMotionRequestBuilder*) clearUserId;
 
+- (NSMutableArray *)modelName;
+- (NSString*)modelNameAtIndex:(NSUInteger)index;
+- (VLTPBDetectMotionRequestBuilder *)addModelName:(NSString*)value;
+- (VLTPBDetectMotionRequestBuilder *)setModelNameArray:(NSArray *)array;
+- (VLTPBDetectMotionRequestBuilder *)clearModelName;
+
+- (NSMutableArray<VLTPBSensor*> *)sensors;
+- (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index;
+- (VLTPBDetectMotionRequestBuilder *)addSensors:(VLTPBSensor*)value;
+- (VLTPBDetectMotionRequestBuilder *)setSensorsArray:(NSArray<VLTPBSensor*> *)array;
+- (VLTPBDetectMotionRequestBuilder *)clearSensors;
+
 - (BOOL) hasSequenceIndex;
 - (UInt32) sequenceIndex;
 - (VLTPBDetectMotionRequestBuilder*) setSequenceIndex:(UInt32) value;
@@ -420,18 +446,498 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
 - (Float64) timestamp;
 - (VLTPBDetectMotionRequestBuilder*) setTimestamp:(Float64) value;
 - (VLTPBDetectMotionRequestBuilder*) clearTimestamp;
+@end
 
-- (NSMutableArray *)modelName;
-- (NSString*)modelNameAtIndex:(NSUInteger)index;
-- (VLTPBDetectMotionRequestBuilder *)addModelName:(NSString*)value;
-- (VLTPBDetectMotionRequestBuilder *)setModelNameArray:(NSArray *)array;
-- (VLTPBDetectMotionRequestBuilder *)clearModelName;
+#define HandshakeRequest_authToken @"authToken"
+#define HandshakeRequest_idfa @"idfa"
+#define HandshakeRequest_userId @"userId"
+#define HandshakeRequest_appId @"appId"
+#define HandshakeRequest_platform @"platform"
+@interface VLTPBHandshakeRequest : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasAuthToken_:1;
+  BOOL hasIdfa_:1;
+  BOOL hasUserId_:1;
+  BOOL hasAppId_:1;
+  BOOL hasPlatform_:1;
+  NSString* authToken;
+  NSString* idfa;
+  NSString* userId;
+  NSString* appId;
+  VLTPBPlatformType platform;
+}
+- (BOOL) hasAuthToken;
+- (BOOL) hasIdfa;
+- (BOOL) hasUserId;
+- (BOOL) hasAppId;
+- (BOOL) hasPlatform;
+@property (readonly, strong) NSString* authToken;
+@property (readonly, strong) NSString* idfa;
+@property (readonly, strong) NSString* userId;
+@property (readonly, strong) NSString* appId;
+@property (readonly) VLTPBPlatformType platform;
 
-- (NSMutableArray *)sensors;
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (VLTPBHandshakeRequestBuilder*) builder;
++ (VLTPBHandshakeRequestBuilder*) builder;
++ (VLTPBHandshakeRequestBuilder*) builderWithPrototype:(VLTPBHandshakeRequest*) prototype;
+- (VLTPBHandshakeRequestBuilder*) toBuilder;
+
++ (VLTPBHandshakeRequest*) parseFromData:(NSData*) data;
++ (VLTPBHandshakeRequest*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBHandshakeRequest*) parseFromInputStream:(NSInputStream*) input;
++ (VLTPBHandshakeRequest*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBHandshakeRequest*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (VLTPBHandshakeRequest*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface VLTPBHandshakeRequestBuilder : PBGeneratedMessageBuilder {
+@private
+  VLTPBHandshakeRequest* resultHandshakeRequest;
+}
+
+- (VLTPBHandshakeRequest*) defaultInstance;
+
+- (VLTPBHandshakeRequestBuilder*) clear;
+- (VLTPBHandshakeRequestBuilder*) clone;
+
+- (VLTPBHandshakeRequest*) build;
+- (VLTPBHandshakeRequest*) buildPartial;
+
+- (VLTPBHandshakeRequestBuilder*) mergeFrom:(VLTPBHandshakeRequest*) other;
+- (VLTPBHandshakeRequestBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (VLTPBHandshakeRequestBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasAuthToken;
+- (NSString*) authToken;
+- (VLTPBHandshakeRequestBuilder*) setAuthToken:(NSString*) value;
+- (VLTPBHandshakeRequestBuilder*) clearAuthToken;
+
+- (BOOL) hasIdfa;
+- (NSString*) idfa;
+- (VLTPBHandshakeRequestBuilder*) setIdfa:(NSString*) value;
+- (VLTPBHandshakeRequestBuilder*) clearIdfa;
+
+- (BOOL) hasUserId;
+- (NSString*) userId;
+- (VLTPBHandshakeRequestBuilder*) setUserId:(NSString*) value;
+- (VLTPBHandshakeRequestBuilder*) clearUserId;
+
+- (BOOL) hasAppId;
+- (NSString*) appId;
+- (VLTPBHandshakeRequestBuilder*) setAppId:(NSString*) value;
+- (VLTPBHandshakeRequestBuilder*) clearAppId;
+
+- (BOOL) hasPlatform;
+- (VLTPBPlatformType) platform;
+- (VLTPBHandshakeRequestBuilder*) setPlatform:(VLTPBPlatformType) value;
+- (VLTPBHandshakeRequestBuilder*) clearPlatform;
+@end
+
+#define HandshakeResponse_sampleSize @"sampleSize"
+#define HandshakeResponse_captureInterval @"captureInterval"
+#define HandshakeResponse_canDetectMotion @"canDetectMotion"
+#define HandshakeResponse_canLabelMotion @"canLabelMotion"
+@interface VLTPBHandshakeResponse : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasCanDetectMotion_:1;
+  BOOL hasCanLabelMotion_:1;
+  BOOL hasSampleSize_:1;
+  BOOL hasCaptureInterval_:1;
+  BOOL canDetectMotion_:1;
+  BOOL canLabelMotion_:1;
+  Float64 sampleSize;
+  Float64 captureInterval;
+}
+- (BOOL) hasSampleSize;
+- (BOOL) hasCaptureInterval;
+- (BOOL) hasCanDetectMotion;
+- (BOOL) hasCanLabelMotion;
+@property (readonly) Float64 sampleSize;
+@property (readonly) Float64 captureInterval;
+- (BOOL) canDetectMotion;
+- (BOOL) canLabelMotion;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (VLTPBHandshakeResponseBuilder*) builder;
++ (VLTPBHandshakeResponseBuilder*) builder;
++ (VLTPBHandshakeResponseBuilder*) builderWithPrototype:(VLTPBHandshakeResponse*) prototype;
+- (VLTPBHandshakeResponseBuilder*) toBuilder;
+
++ (VLTPBHandshakeResponse*) parseFromData:(NSData*) data;
++ (VLTPBHandshakeResponse*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBHandshakeResponse*) parseFromInputStream:(NSInputStream*) input;
++ (VLTPBHandshakeResponse*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBHandshakeResponse*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (VLTPBHandshakeResponse*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface VLTPBHandshakeResponseBuilder : PBGeneratedMessageBuilder {
+@private
+  VLTPBHandshakeResponse* resultHandshakeResponse;
+}
+
+- (VLTPBHandshakeResponse*) defaultInstance;
+
+- (VLTPBHandshakeResponseBuilder*) clear;
+- (VLTPBHandshakeResponseBuilder*) clone;
+
+- (VLTPBHandshakeResponse*) build;
+- (VLTPBHandshakeResponse*) buildPartial;
+
+- (VLTPBHandshakeResponseBuilder*) mergeFrom:(VLTPBHandshakeResponse*) other;
+- (VLTPBHandshakeResponseBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (VLTPBHandshakeResponseBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasSampleSize;
+- (Float64) sampleSize;
+- (VLTPBHandshakeResponseBuilder*) setSampleSize:(Float64) value;
+- (VLTPBHandshakeResponseBuilder*) clearSampleSize;
+
+- (BOOL) hasCaptureInterval;
+- (Float64) captureInterval;
+- (VLTPBHandshakeResponseBuilder*) setCaptureInterval:(Float64) value;
+- (VLTPBHandshakeResponseBuilder*) clearCaptureInterval;
+
+- (BOOL) hasCanDetectMotion;
+- (BOOL) canDetectMotion;
+- (VLTPBHandshakeResponseBuilder*) setCanDetectMotion:(BOOL) value;
+- (VLTPBHandshakeResponseBuilder*) clearCanDetectMotion;
+
+- (BOOL) hasCanLabelMotion;
+- (BOOL) canLabelMotion;
+- (VLTPBHandshakeResponseBuilder*) setCanLabelMotion:(BOOL) value;
+- (VLTPBHandshakeResponseBuilder*) clearCanLabelMotion;
+@end
+
+#define Request_sensors @"sensors"
+#define Request_modelNames @"modelNames"
+#define Request_sessionId @"sessionId"
+@interface VLTPBRequest : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasSessionId_:1;
+  NSString* sessionId;
+  NSMutableArray * modelNamesArray;
+  NSMutableArray * sensorsArray;
+}
+- (BOOL) hasSessionId;
+@property (readonly, strong) NSArray<VLTPBSensor*> * sensors;
+@property (readonly, strong) NSArray * modelNames;
+@property (readonly, strong) NSString* sessionId;
 - (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index;
-- (VLTPBDetectMotionRequestBuilder *)addSensors:(VLTPBSensor*)value;
-- (VLTPBDetectMotionRequestBuilder *)setSensorsArray:(NSArray *)array;
-- (VLTPBDetectMotionRequestBuilder *)clearSensors;
+- (NSString*)modelNamesAtIndex:(NSUInteger)index;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (VLTPBRequestBuilder*) builder;
++ (VLTPBRequestBuilder*) builder;
++ (VLTPBRequestBuilder*) builderWithPrototype:(VLTPBRequest*) prototype;
+- (VLTPBRequestBuilder*) toBuilder;
+
++ (VLTPBRequest*) parseFromData:(NSData*) data;
++ (VLTPBRequest*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBRequest*) parseFromInputStream:(NSInputStream*) input;
++ (VLTPBRequest*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBRequest*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (VLTPBRequest*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface VLTPBRequestBuilder : PBGeneratedMessageBuilder {
+@private
+  VLTPBRequest* resultRequest;
+}
+
+- (VLTPBRequest*) defaultInstance;
+
+- (VLTPBRequestBuilder*) clear;
+- (VLTPBRequestBuilder*) clone;
+
+- (VLTPBRequest*) build;
+- (VLTPBRequest*) buildPartial;
+
+- (VLTPBRequestBuilder*) mergeFrom:(VLTPBRequest*) other;
+- (VLTPBRequestBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (VLTPBRequestBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (NSMutableArray<VLTPBSensor*> *)sensors;
+- (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index;
+- (VLTPBRequestBuilder *)addSensors:(VLTPBSensor*)value;
+- (VLTPBRequestBuilder *)setSensorsArray:(NSArray<VLTPBSensor*> *)array;
+- (VLTPBRequestBuilder *)clearSensors;
+
+- (NSMutableArray *)modelNames;
+- (NSString*)modelNamesAtIndex:(NSUInteger)index;
+- (VLTPBRequestBuilder *)addModelNames:(NSString*)value;
+- (VLTPBRequestBuilder *)setModelNamesArray:(NSArray *)array;
+- (VLTPBRequestBuilder *)clearModelNames;
+
+- (BOOL) hasSessionId;
+- (NSString*) sessionId;
+- (VLTPBRequestBuilder*) setSessionId:(NSString*) value;
+- (VLTPBRequestBuilder*) clearSessionId;
+@end
+
+#define ModelPrediction_modelName @"modelName"
+#define ModelPrediction_predictions @"predictions"
+@interface VLTPBModelPrediction : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasModelName_:1;
+  NSString* modelName;
+  NSMutableArray * predictionsArray;
+}
+- (BOOL) hasModelName;
+@property (readonly, strong) NSString* modelName;
+@property (readonly, strong) NSArray<VLTPBPrediction*> * predictions;
+- (VLTPBPrediction*)predictionsAtIndex:(NSUInteger)index;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (VLTPBModelPredictionBuilder*) builder;
++ (VLTPBModelPredictionBuilder*) builder;
++ (VLTPBModelPredictionBuilder*) builderWithPrototype:(VLTPBModelPrediction*) prototype;
+- (VLTPBModelPredictionBuilder*) toBuilder;
+
++ (VLTPBModelPrediction*) parseFromData:(NSData*) data;
++ (VLTPBModelPrediction*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBModelPrediction*) parseFromInputStream:(NSInputStream*) input;
++ (VLTPBModelPrediction*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBModelPrediction*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (VLTPBModelPrediction*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface VLTPBModelPredictionBuilder : PBGeneratedMessageBuilder {
+@private
+  VLTPBModelPrediction* resultModelPrediction;
+}
+
+- (VLTPBModelPrediction*) defaultInstance;
+
+- (VLTPBModelPredictionBuilder*) clear;
+- (VLTPBModelPredictionBuilder*) clone;
+
+- (VLTPBModelPrediction*) build;
+- (VLTPBModelPrediction*) buildPartial;
+
+- (VLTPBModelPredictionBuilder*) mergeFrom:(VLTPBModelPrediction*) other;
+- (VLTPBModelPredictionBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (VLTPBModelPredictionBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasModelName;
+- (NSString*) modelName;
+- (VLTPBModelPredictionBuilder*) setModelName:(NSString*) value;
+- (VLTPBModelPredictionBuilder*) clearModelName;
+
+- (NSMutableArray<VLTPBPrediction*> *)predictions;
+- (VLTPBPrediction*)predictionsAtIndex:(NSUInteger)index;
+- (VLTPBModelPredictionBuilder *)addPredictions:(VLTPBPrediction*)value;
+- (VLTPBModelPredictionBuilder *)setPredictionsArray:(NSArray<VLTPBPrediction*> *)array;
+- (VLTPBModelPredictionBuilder *)clearPredictions;
+@end
+
+#define Prediction_name @"name"
+#define Prediction_confidence @"confidence"
+#define Prediction_timestamp @"timestamp"
+@interface VLTPBPrediction : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasTimestamp_:1;
+  BOOL hasConfidence_:1;
+  BOOL hasName_:1;
+  Float64 timestamp;
+  Float32 confidence;
+  NSString* name;
+}
+- (BOOL) hasName;
+- (BOOL) hasConfidence;
+- (BOOL) hasTimestamp;
+@property (readonly, strong) NSString* name;
+@property (readonly) Float32 confidence;
+@property (readonly) Float64 timestamp;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (VLTPBPredictionBuilder*) builder;
++ (VLTPBPredictionBuilder*) builder;
++ (VLTPBPredictionBuilder*) builderWithPrototype:(VLTPBPrediction*) prototype;
+- (VLTPBPredictionBuilder*) toBuilder;
+
++ (VLTPBPrediction*) parseFromData:(NSData*) data;
++ (VLTPBPrediction*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBPrediction*) parseFromInputStream:(NSInputStream*) input;
++ (VLTPBPrediction*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBPrediction*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (VLTPBPrediction*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface VLTPBPredictionBuilder : PBGeneratedMessageBuilder {
+@private
+  VLTPBPrediction* resultPrediction;
+}
+
+- (VLTPBPrediction*) defaultInstance;
+
+- (VLTPBPredictionBuilder*) clear;
+- (VLTPBPredictionBuilder*) clone;
+
+- (VLTPBPrediction*) build;
+- (VLTPBPrediction*) buildPartial;
+
+- (VLTPBPredictionBuilder*) mergeFrom:(VLTPBPrediction*) other;
+- (VLTPBPredictionBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (VLTPBPredictionBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasName;
+- (NSString*) name;
+- (VLTPBPredictionBuilder*) setName:(NSString*) value;
+- (VLTPBPredictionBuilder*) clearName;
+
+- (BOOL) hasConfidence;
+- (Float32) confidence;
+- (VLTPBPredictionBuilder*) setConfidence:(Float32) value;
+- (VLTPBPredictionBuilder*) clearConfidence;
+
+- (BOOL) hasTimestamp;
+- (Float64) timestamp;
+- (VLTPBPredictionBuilder*) setTimestamp:(Float64) value;
+- (VLTPBPredictionBuilder*) clearTimestamp;
+@end
+
+#define Error_errorMessage @"errorMessage"
+#define Error_errorCode @"errorCode"
+@interface VLTPBError : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasErrorMessage_:1;
+  BOOL hasErrorCode_:1;
+  NSString* errorMessage;
+  NSString* errorCode;
+}
+- (BOOL) hasErrorMessage;
+- (BOOL) hasErrorCode;
+@property (readonly, strong) NSString* errorMessage;
+@property (readonly, strong) NSString* errorCode;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (VLTPBErrorBuilder*) builder;
++ (VLTPBErrorBuilder*) builder;
++ (VLTPBErrorBuilder*) builderWithPrototype:(VLTPBError*) prototype;
+- (VLTPBErrorBuilder*) toBuilder;
+
++ (VLTPBError*) parseFromData:(NSData*) data;
++ (VLTPBError*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBError*) parseFromInputStream:(NSInputStream*) input;
++ (VLTPBError*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBError*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (VLTPBError*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface VLTPBErrorBuilder : PBGeneratedMessageBuilder {
+@private
+  VLTPBError* resultError;
+}
+
+- (VLTPBError*) defaultInstance;
+
+- (VLTPBErrorBuilder*) clear;
+- (VLTPBErrorBuilder*) clone;
+
+- (VLTPBError*) build;
+- (VLTPBError*) buildPartial;
+
+- (VLTPBErrorBuilder*) mergeFrom:(VLTPBError*) other;
+- (VLTPBErrorBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (VLTPBErrorBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasErrorMessage;
+- (NSString*) errorMessage;
+- (VLTPBErrorBuilder*) setErrorMessage:(NSString*) value;
+- (VLTPBErrorBuilder*) clearErrorMessage;
+
+- (BOOL) hasErrorCode;
+- (NSString*) errorCode;
+- (VLTPBErrorBuilder*) setErrorCode:(NSString*) value;
+- (VLTPBErrorBuilder*) clearErrorCode;
+@end
+
+#define Response_modelPredictions @"modelPredictions"
+#define Response_error @"error"
+@interface VLTPBResponse : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasError_:1;
+  VLTPBError* error;
+  NSMutableArray * modelPredictionsArray;
+}
+- (BOOL) hasError;
+@property (readonly, strong) NSArray<VLTPBModelPrediction*> * modelPredictions;
+@property (readonly, strong) VLTPBError* error;
+- (VLTPBModelPrediction*)modelPredictionsAtIndex:(NSUInteger)index;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (VLTPBResponseBuilder*) builder;
++ (VLTPBResponseBuilder*) builder;
++ (VLTPBResponseBuilder*) builderWithPrototype:(VLTPBResponse*) prototype;
+- (VLTPBResponseBuilder*) toBuilder;
+
++ (VLTPBResponse*) parseFromData:(NSData*) data;
++ (VLTPBResponse*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBResponse*) parseFromInputStream:(NSInputStream*) input;
++ (VLTPBResponse*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (VLTPBResponse*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (VLTPBResponse*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface VLTPBResponseBuilder : PBGeneratedMessageBuilder {
+@private
+  VLTPBResponse* resultResponse;
+}
+
+- (VLTPBResponse*) defaultInstance;
+
+- (VLTPBResponseBuilder*) clear;
+- (VLTPBResponseBuilder*) clone;
+
+- (VLTPBResponse*) build;
+- (VLTPBResponse*) buildPartial;
+
+- (VLTPBResponseBuilder*) mergeFrom:(VLTPBResponse*) other;
+- (VLTPBResponseBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (VLTPBResponseBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (NSMutableArray<VLTPBModelPrediction*> *)modelPredictions;
+- (VLTPBModelPrediction*)modelPredictionsAtIndex:(NSUInteger)index;
+- (VLTPBResponseBuilder *)addModelPredictions:(VLTPBModelPrediction*)value;
+- (VLTPBResponseBuilder *)setModelPredictionsArray:(NSArray<VLTPBModelPrediction*> *)array;
+- (VLTPBResponseBuilder *)clearModelPredictions;
+
+- (BOOL) hasError;
+- (VLTPBError*) error;
+- (VLTPBResponseBuilder*) setError:(VLTPBError*) value;
+- (VLTPBResponseBuilder*) setErrorBuilder:(VLTPBErrorBuilder*) builderForValue;
+- (VLTPBResponseBuilder*) mergeError:(VLTPBError*) value;
+- (VLTPBResponseBuilder*) clearError;
 @end
 
 

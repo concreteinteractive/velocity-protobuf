@@ -3,6 +3,11 @@
 OUTDIR ?= ./lib
 PB_NO_TAG_WARNINGS := 1
 
+install:
+	git submodule update --init --recursive && \
+	cd vendor/protobuf-objc && \
+	./scripts/build.sh
+
 # objc
 objc.in:
 	mkdir -p ./build/objc
