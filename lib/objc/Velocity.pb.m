@@ -41,6 +41,599 @@ NSString *NSStringFromVLTPBPlatformType(VLTPBPlatformType value) {
   }
 }
 
+@interface VLTPBSensor ()
+@property VLTPBSensorType type;
+@property (strong) NSMutableArray<VLTPBSample*> * samplesArray;
+@end
+
+@implementation VLTPBSensor
+
+- (BOOL) hasType {
+  return !!hasType_;
+}
+- (void) setHasType:(BOOL) _value_ {
+  hasType_ = !!_value_;
+}
+@synthesize type;
+@synthesize samplesArray;
+@dynamic samples;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.type = VLTPBSensorTypeAccel;
+  }
+  return self;
+}
+static VLTPBSensor* defaultVLTPBSensorInstance = nil;
++ (void) initialize {
+  if (self == [VLTPBSensor class]) {
+    defaultVLTPBSensorInstance = [[VLTPBSensor alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultVLTPBSensorInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultVLTPBSensorInstance;
+}
+- (NSArray<VLTPBSample*> *)samples {
+  return samplesArray;
+}
+- (VLTPBSample*)samplesAtIndex:(NSUInteger)index {
+  return [samplesArray objectAtIndex:index];
+}
+- (BOOL) isInitialized {
+  if (!self.hasType) {
+    return NO;
+  }
+  __block BOOL isInitsamples = YES;
+   [self.samples enumerateObjectsUsingBlock:^(VLTPBSample *element, NSUInteger idx, BOOL *stop) {
+    if (!element.isInitialized) {
+      isInitsamples = NO;
+      *stop = YES;
+    }
+  }];
+  if (!isInitsamples) return isInitsamples;
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasType) {
+    [output writeEnum:1 value:self.type];
+  }
+  [self.samplesArray enumerateObjectsUsingBlock:^(VLTPBSample *element, NSUInteger idx, BOOL *stop) {
+    [output writeMessage:2 value:element];
+  }];
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasType) {
+    size_ += computeEnumSize(1, self.type);
+  }
+  [self.samplesArray enumerateObjectsUsingBlock:^(VLTPBSample *element, NSUInteger idx, BOOL *stop) {
+    size_ += computeMessageSize(2, element);
+  }];
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (VLTPBSensor*) parseFromData:(NSData*) data {
+  return (VLTPBSensor*)[[[VLTPBSensor builder] mergeFromData:data] build];
+}
++ (VLTPBSensor*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBSensor*)[[[VLTPBSensor builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBSensor*) parseFromInputStream:(NSInputStream*) input {
+  return (VLTPBSensor*)[[[VLTPBSensor builder] mergeFromInputStream:input] build];
+}
++ (VLTPBSensor*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBSensor*)[[[VLTPBSensor builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBSensor*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (VLTPBSensor*)[[[VLTPBSensor builder] mergeFromCodedInputStream:input] build];
+}
++ (VLTPBSensor*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBSensor*)[[[VLTPBSensor builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBSensorBuilder*) builder {
+  return [[VLTPBSensorBuilder alloc] init];
+}
++ (VLTPBSensorBuilder*) builderWithPrototype:(VLTPBSensor*) prototype {
+  return [[VLTPBSensor builder] mergeFrom:prototype];
+}
+- (VLTPBSensorBuilder*) builder {
+  return [VLTPBSensor builder];
+}
+- (VLTPBSensorBuilder*) toBuilder {
+  return [VLTPBSensor builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasType) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"type", NSStringFromVLTPBSensorType(self.type)];
+  }
+  [self.samplesArray enumerateObjectsUsingBlock:^(VLTPBSample *element, NSUInteger idx, BOOL *stop) {
+    [output appendFormat:@"%@%@ {\n", indent, @"samples"];
+    [element writeDescriptionTo:output
+                     withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }];
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasType) {
+    [dictionary setObject: @(self.type) forKey: @"type"];
+  }
+  for (VLTPBSample* element in self.samplesArray) {
+    NSMutableDictionary *elementDictionary = [NSMutableDictionary dictionary];
+    [element storeInDictionary:elementDictionary];
+    [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"samples"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[VLTPBSensor class]]) {
+    return NO;
+  }
+  VLTPBSensor *otherMessage = other;
+  return
+      self.hasType == otherMessage.hasType &&
+      (!self.hasType || self.type == otherMessage.type) &&
+      [self.samplesArray isEqualToArray:otherMessage.samplesArray] &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasType) {
+    hashCode = hashCode * 31 + self.type;
+  }
+  [self.samplesArray enumerateObjectsUsingBlock:^(VLTPBSample *element, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [element hash];
+  }];
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+BOOL VLTPBSensorTypeIsValidValue(VLTPBSensorType value) {
+  switch (value) {
+    case VLTPBSensorTypeAccel:
+    case VLTPBSensorTypeGyro:
+    case VLTPBSensorTypeMag:
+    case VLTPBSensorTypeGps:
+      return YES;
+    default:
+      return NO;
+  }
+}
+NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value) {
+  switch (value) {
+    case VLTPBSensorTypeAccel:
+      return @"VLTPBSensorTypeAccel";
+    case VLTPBSensorTypeGyro:
+      return @"VLTPBSensorTypeGyro";
+    case VLTPBSensorTypeMag:
+      return @"VLTPBSensorTypeMag";
+    case VLTPBSensorTypeGps:
+      return @"VLTPBSensorTypeGps";
+    default:
+      return nil;
+  }
+}
+
+@interface VLTPBSensorBuilder()
+@property (strong) VLTPBSensor* resultSensor;
+@end
+
+@implementation VLTPBSensorBuilder
+@synthesize resultSensor;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultSensor = [[VLTPBSensor alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultSensor;
+}
+- (VLTPBSensorBuilder*) clear {
+  self.resultSensor = [[VLTPBSensor alloc] init];
+  return self;
+}
+- (VLTPBSensorBuilder*) clone {
+  return [VLTPBSensor builderWithPrototype:resultSensor];
+}
+- (VLTPBSensor*) defaultInstance {
+  return [VLTPBSensor defaultInstance];
+}
+- (VLTPBSensor*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (VLTPBSensor*) buildPartial {
+  VLTPBSensor* returnMe = resultSensor;
+  self.resultSensor = nil;
+  return returnMe;
+}
+- (VLTPBSensorBuilder*) mergeFrom:(VLTPBSensor*) other {
+  if (other == [VLTPBSensor defaultInstance]) {
+    return self;
+  }
+  if (other.hasType) {
+    [self setType:other.type];
+  }
+  if (other.samplesArray.count > 0) {
+    if (resultSensor.samplesArray == nil) {
+      resultSensor.samplesArray = [[NSMutableArray alloc] initWithArray:other.samplesArray];
+    } else {
+      [resultSensor.samplesArray addObjectsFromArray:other.samplesArray];
+    }
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (VLTPBSensorBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (VLTPBSensorBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 8: {
+        VLTPBSensorType value = (VLTPBSensorType)[input readEnum];
+        if (VLTPBSensorTypeIsValidValue(value)) {
+          [self setType:value];
+        } else {
+          [unknownFields mergeVarintField:1 value:value];
+        }
+        break;
+      }
+      case 18: {
+        VLTPBSampleBuilder* subBuilder = [VLTPBSample builder];
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self addSamples:[subBuilder buildPartial]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasType {
+  return resultSensor.hasType;
+}
+- (VLTPBSensorType) type {
+  return resultSensor.type;
+}
+- (VLTPBSensorBuilder*) setType:(VLTPBSensorType) value {
+  resultSensor.hasType = YES;
+  resultSensor.type = value;
+  return self;
+}
+- (VLTPBSensorBuilder*) clearType {
+  resultSensor.hasType = NO;
+  resultSensor.type = VLTPBSensorTypeAccel;
+  return self;
+}
+- (NSMutableArray<VLTPBSample*> *)samples {
+  return resultSensor.samplesArray;
+}
+- (VLTPBSample*)samplesAtIndex:(NSUInteger)index {
+  return [resultSensor samplesAtIndex:index];
+}
+- (VLTPBSensorBuilder *)addSamples:(VLTPBSample*)value {
+  if (resultSensor.samplesArray == nil) {
+    resultSensor.samplesArray = [[NSMutableArray alloc]init];
+  }
+  [resultSensor.samplesArray addObject:value];
+  return self;
+}
+- (VLTPBSensorBuilder *)setSamplesArray:(NSArray<VLTPBSample*> *)array {
+  resultSensor.samplesArray = [[NSMutableArray alloc]initWithArray:array];
+  return self;
+}
+- (VLTPBSensorBuilder *)clearSamples {
+  resultSensor.samplesArray = nil;
+  return self;
+}
+@end
+
+@interface VLTPBSample ()
+@property Float64 timestamp;
+@property (strong) PBAppendableArray * valuesArray;
+@end
+
+@implementation VLTPBSample
+
+- (BOOL) hasTimestamp {
+  return !!hasTimestamp_;
+}
+- (void) setHasTimestamp:(BOOL) _value_ {
+  hasTimestamp_ = !!_value_;
+}
+@synthesize timestamp;
+@synthesize valuesArray;
+@dynamic values;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.timestamp = 0;
+  }
+  return self;
+}
+static VLTPBSample* defaultVLTPBSampleInstance = nil;
++ (void) initialize {
+  if (self == [VLTPBSample class]) {
+    defaultVLTPBSampleInstance = [[VLTPBSample alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultVLTPBSampleInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultVLTPBSampleInstance;
+}
+- (PBArray *)values {
+  return valuesArray;
+}
+- (Float32)valuesAtIndex:(NSUInteger)index {
+  return [valuesArray floatAtIndex:index];
+}
+- (BOOL) isInitialized {
+  if (!self.hasTimestamp) {
+    return NO;
+  }
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasTimestamp) {
+    [output writeDouble:1 value:self.timestamp];
+  }
+  const NSUInteger valuesArrayCount = self.valuesArray.count;
+  if (valuesArrayCount > 0) {
+    const Float32 *values = (const Float32 *)self.valuesArray.data;
+    for (NSUInteger i = 0; i < valuesArrayCount; ++i) {
+      [output writeFloat:2 value:values[i]];
+    }
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasTimestamp) {
+    size_ += computeDoubleSize(1, self.timestamp);
+  }
+  {
+    __block SInt32 dataSize = 0;
+    const NSUInteger count = self.valuesArray.count;
+    dataSize = (SInt32)(4 * count);
+    size_ += dataSize;
+    size_ += (SInt32)(1 * count);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (VLTPBSample*) parseFromData:(NSData*) data {
+  return (VLTPBSample*)[[[VLTPBSample builder] mergeFromData:data] build];
+}
++ (VLTPBSample*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBSample*)[[[VLTPBSample builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBSample*) parseFromInputStream:(NSInputStream*) input {
+  return (VLTPBSample*)[[[VLTPBSample builder] mergeFromInputStream:input] build];
+}
++ (VLTPBSample*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBSample*)[[[VLTPBSample builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBSample*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (VLTPBSample*)[[[VLTPBSample builder] mergeFromCodedInputStream:input] build];
+}
++ (VLTPBSample*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBSample*)[[[VLTPBSample builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBSampleBuilder*) builder {
+  return [[VLTPBSampleBuilder alloc] init];
+}
++ (VLTPBSampleBuilder*) builderWithPrototype:(VLTPBSample*) prototype {
+  return [[VLTPBSample builder] mergeFrom:prototype];
+}
+- (VLTPBSampleBuilder*) builder {
+  return [VLTPBSample builder];
+}
+- (VLTPBSampleBuilder*) toBuilder {
+  return [VLTPBSample builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasTimestamp) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"timestamp", [NSNumber numberWithDouble:self.timestamp]];
+  }
+  [self.valuesArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"values", obj];
+  }];
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasTimestamp) {
+    [dictionary setObject: [NSNumber numberWithDouble:self.timestamp] forKey: @"timestamp"];
+  }
+  NSMutableArray * valuesArrayArray = [NSMutableArray new];
+  NSUInteger valuesArrayCount=self.valuesArray.count;
+  for(int i=0;i<valuesArrayCount;i++){
+    [valuesArrayArray addObject: @([self.valuesArray floatAtIndex:i])];
+  }
+  [dictionary setObject: valuesArrayArray forKey: @"values"];
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[VLTPBSample class]]) {
+    return NO;
+  }
+  VLTPBSample *otherMessage = other;
+  return
+      self.hasTimestamp == otherMessage.hasTimestamp &&
+      (!self.hasTimestamp || self.timestamp == otherMessage.timestamp) &&
+      [self.valuesArray isEqualToArray:otherMessage.valuesArray] &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasTimestamp) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithDouble:self.timestamp] hash];
+  }
+  [self.valuesArray enumerateObjectsUsingBlock:^(NSNumber *obj, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [obj longValue];
+  }];
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface VLTPBSampleBuilder()
+@property (strong) VLTPBSample* resultSample;
+@end
+
+@implementation VLTPBSampleBuilder
+@synthesize resultSample;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultSample = [[VLTPBSample alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultSample;
+}
+- (VLTPBSampleBuilder*) clear {
+  self.resultSample = [[VLTPBSample alloc] init];
+  return self;
+}
+- (VLTPBSampleBuilder*) clone {
+  return [VLTPBSample builderWithPrototype:resultSample];
+}
+- (VLTPBSample*) defaultInstance {
+  return [VLTPBSample defaultInstance];
+}
+- (VLTPBSample*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (VLTPBSample*) buildPartial {
+  VLTPBSample* returnMe = resultSample;
+  self.resultSample = nil;
+  return returnMe;
+}
+- (VLTPBSampleBuilder*) mergeFrom:(VLTPBSample*) other {
+  if (other == [VLTPBSample defaultInstance]) {
+    return self;
+  }
+  if (other.hasTimestamp) {
+    [self setTimestamp:other.timestamp];
+  }
+  if (other.valuesArray.count > 0) {
+    if (resultSample.valuesArray == nil) {
+      resultSample.valuesArray = [other.valuesArray copy];
+    } else {
+      [resultSample.valuesArray appendArray:other.valuesArray];
+    }
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (VLTPBSampleBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (VLTPBSampleBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 9: {
+        [self setTimestamp:[input readDouble]];
+        break;
+      }
+      case 21: {
+        [self addValues:[input readFloat]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasTimestamp {
+  return resultSample.hasTimestamp;
+}
+- (Float64) timestamp {
+  return resultSample.timestamp;
+}
+- (VLTPBSampleBuilder*) setTimestamp:(Float64) value {
+  resultSample.hasTimestamp = YES;
+  resultSample.timestamp = value;
+  return self;
+}
+- (VLTPBSampleBuilder*) clearTimestamp {
+  resultSample.hasTimestamp = NO;
+  resultSample.timestamp = 0;
+  return self;
+}
+- (PBAppendableArray *)values {
+  return resultSample.valuesArray;
+}
+- (Float32)valuesAtIndex:(NSUInteger)index {
+  return [resultSample valuesAtIndex:index];
+}
+- (VLTPBSampleBuilder *)addValues:(Float32)value {
+  if (resultSample.valuesArray == nil) {
+    resultSample.valuesArray = [PBAppendableArray arrayWithValueType:PBArrayValueTypeFloat];
+  }
+  [resultSample.valuesArray addFloat:value];
+  return self;
+}
+- (VLTPBSampleBuilder *)setValuesArray:(NSArray *)array {
+  resultSample.valuesArray = [PBAppendableArray arrayWithArray:array valueType:PBArrayValueTypeFloat];
+  return self;
+}
+- (VLTPBSampleBuilder *)setValuesValues:(const Float32 *)values count:(NSUInteger)count {
+  resultSample.valuesArray = [PBAppendableArray arrayWithValues:values count:count valueType:PBArrayValueTypeFloat];
+  return self;
+}
+- (VLTPBSampleBuilder *)clearValues {
+  resultSample.valuesArray = nil;
+  return self;
+}
+@end
+
 @interface VLTPBCapture ()
 @property (strong) NSString* impressionId;
 @property (strong) NSString* ifa;
@@ -48,7 +641,7 @@ NSString *NSStringFromVLTPBPlatformType(VLTPBPlatformType value) {
 @property (strong) NSString* appId;
 @property (strong) NSString* metadata;
 @property VLTPBPlatformType platform;
-@property (strong) NSMutableArray * sensorsArray;
+@property (strong) NSMutableArray<VLTPBSensor*> * sensorsArray;
 @property Float64 timestamp;
 @end
 
@@ -129,7 +722,7 @@ static VLTPBCapture* defaultVLTPBCaptureInstance = nil;
 - (instancetype) defaultInstance {
   return defaultVLTPBCaptureInstance;
 }
-- (NSArray *)sensors {
+- (NSArray<VLTPBSensor*> *)sensors {
   return sensorsArray;
 }
 - (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index {
@@ -591,7 +1184,7 @@ static VLTPBCapture* defaultVLTPBCaptureInstance = nil;
   resultCapture.platform = VLTPBPlatformTypeIos;
   return self;
 }
-- (NSMutableArray *)sensors {
+- (NSMutableArray<VLTPBSensor*> *)sensors {
   return resultCapture.sensorsArray;
 }
 - (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index {
@@ -604,7 +1197,7 @@ static VLTPBCapture* defaultVLTPBCaptureInstance = nil;
   [resultCapture.sensorsArray addObject:value];
   return self;
 }
-- (VLTPBCaptureBuilder *)setSensorsArray:(NSArray *)array {
+- (VLTPBCaptureBuilder *)setSensorsArray:(NSArray<VLTPBSensor*> *)array {
   resultCapture.sensorsArray = [[NSMutableArray alloc]initWithArray:array];
   return self;
 }
@@ -630,607 +1223,14 @@ static VLTPBCapture* defaultVLTPBCaptureInstance = nil;
 }
 @end
 
-@interface VLTPBSensor ()
-@property VLTPBSensorType type;
-@property (strong) NSMutableArray * samplesArray;
-@end
-
-@implementation VLTPBSensor
-
-- (BOOL) hasType {
-  return !!hasType_;
-}
-- (void) setHasType:(BOOL) _value_ {
-  hasType_ = !!_value_;
-}
-@synthesize type;
-@synthesize samplesArray;
-@dynamic samples;
-- (instancetype) init {
-  if ((self = [super init])) {
-    self.type = VLTPBSensorTypeAccel;
-  }
-  return self;
-}
-static VLTPBSensor* defaultVLTPBSensorInstance = nil;
-+ (void) initialize {
-  if (self == [VLTPBSensor class]) {
-    defaultVLTPBSensorInstance = [[VLTPBSensor alloc] init];
-  }
-}
-+ (instancetype) defaultInstance {
-  return defaultVLTPBSensorInstance;
-}
-- (instancetype) defaultInstance {
-  return defaultVLTPBSensorInstance;
-}
-- (NSArray *)samples {
-  return samplesArray;
-}
-- (VLTPBSample*)samplesAtIndex:(NSUInteger)index {
-  return [samplesArray objectAtIndex:index];
-}
-- (BOOL) isInitialized {
-  if (!self.hasType) {
-    return NO;
-  }
-  __block BOOL isInitsamples = YES;
-   [self.samples enumerateObjectsUsingBlock:^(VLTPBSample *element, NSUInteger idx, BOOL *stop) {
-    if (!element.isInitialized) {
-      isInitsamples = NO;
-      *stop = YES;
-    }
-  }];
-  if (!isInitsamples) return isInitsamples;
-  return YES;
-}
-- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
-  if (self.hasType) {
-    [output writeEnum:1 value:self.type];
-  }
-  [self.samplesArray enumerateObjectsUsingBlock:^(VLTPBSample *element, NSUInteger idx, BOOL *stop) {
-    [output writeMessage:2 value:element];
-  }];
-  [self.unknownFields writeToCodedOutputStream:output];
-}
-- (SInt32) serializedSize {
-  __block SInt32 size_ = memoizedSerializedSize;
-  if (size_ != -1) {
-    return size_;
-  }
-
-  size_ = 0;
-  if (self.hasType) {
-    size_ += computeEnumSize(1, self.type);
-  }
-  [self.samplesArray enumerateObjectsUsingBlock:^(VLTPBSample *element, NSUInteger idx, BOOL *stop) {
-    size_ += computeMessageSize(2, element);
-  }];
-  size_ += self.unknownFields.serializedSize;
-  memoizedSerializedSize = size_;
-  return size_;
-}
-+ (VLTPBSensor*) parseFromData:(NSData*) data {
-  return (VLTPBSensor*)[[[VLTPBSensor builder] mergeFromData:data] build];
-}
-+ (VLTPBSensor*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (VLTPBSensor*)[[[VLTPBSensor builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
-}
-+ (VLTPBSensor*) parseFromInputStream:(NSInputStream*) input {
-  return (VLTPBSensor*)[[[VLTPBSensor builder] mergeFromInputStream:input] build];
-}
-+ (VLTPBSensor*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (VLTPBSensor*)[[[VLTPBSensor builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
-}
-+ (VLTPBSensor*) parseFromCodedInputStream:(PBCodedInputStream*) input {
-  return (VLTPBSensor*)[[[VLTPBSensor builder] mergeFromCodedInputStream:input] build];
-}
-+ (VLTPBSensor*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (VLTPBSensor*)[[[VLTPBSensor builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
-}
-+ (VLTPBSensorBuilder*) builder {
-  return [[VLTPBSensorBuilder alloc] init];
-}
-+ (VLTPBSensorBuilder*) builderWithPrototype:(VLTPBSensor*) prototype {
-  return [[VLTPBSensor builder] mergeFrom:prototype];
-}
-- (VLTPBSensorBuilder*) builder {
-  return [VLTPBSensor builder];
-}
-- (VLTPBSensorBuilder*) toBuilder {
-  return [VLTPBSensor builderWithPrototype:self];
-}
-- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
-  if (self.hasType) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"type", NSStringFromVLTPBSensorType(self.type)];
-  }
-  [self.samplesArray enumerateObjectsUsingBlock:^(VLTPBSample *element, NSUInteger idx, BOOL *stop) {
-    [output appendFormat:@"%@%@ {\n", indent, @"samples"];
-    [element writeDescriptionTo:output
-                     withIndent:[NSString stringWithFormat:@"%@  ", indent]];
-    [output appendFormat:@"%@}\n", indent];
-  }];
-  [self.unknownFields writeDescriptionTo:output withIndent:indent];
-}
-- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
-  if (self.hasType) {
-    [dictionary setObject: @(self.type) forKey: @"type"];
-  }
-  for (VLTPBSample* element in self.samplesArray) {
-    NSMutableDictionary *elementDictionary = [NSMutableDictionary dictionary];
-    [element storeInDictionary:elementDictionary];
-    [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"samples"];
-  }
-  [self.unknownFields storeInDictionary:dictionary];
-}
-- (BOOL) isEqual:(id)other {
-  if (other == self) {
-    return YES;
-  }
-  if (![other isKindOfClass:[VLTPBSensor class]]) {
-    return NO;
-  }
-  VLTPBSensor *otherMessage = other;
-  return
-      self.hasType == otherMessage.hasType &&
-      (!self.hasType || self.type == otherMessage.type) &&
-      [self.samplesArray isEqualToArray:otherMessage.samplesArray] &&
-      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
-}
-- (NSUInteger) hash {
-  __block NSUInteger hashCode = 7;
-  if (self.hasType) {
-    hashCode = hashCode * 31 + self.type;
-  }
-  [self.samplesArray enumerateObjectsUsingBlock:^(VLTPBSample *element, NSUInteger idx, BOOL *stop) {
-    hashCode = hashCode * 31 + [element hash];
-  }];
-  hashCode = hashCode * 31 + [self.unknownFields hash];
-  return hashCode;
-}
-@end
-
-BOOL VLTPBSensorTypeIsValidValue(VLTPBSensorType value) {
-  switch (value) {
-    case VLTPBSensorTypeAccel:
-    case VLTPBSensorTypeGyro:
-    case VLTPBSensorTypeMag:
-    case VLTPBSensorTypeGps:
-      return YES;
-    default:
-      return NO;
-  }
-}
-NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value) {
-  switch (value) {
-    case VLTPBSensorTypeAccel:
-      return @"VLTPBSensorTypeAccel";
-    case VLTPBSensorTypeGyro:
-      return @"VLTPBSensorTypeGyro";
-    case VLTPBSensorTypeMag:
-      return @"VLTPBSensorTypeMag";
-    case VLTPBSensorTypeGps:
-      return @"VLTPBSensorTypeGps";
-    default:
-      return nil;
-  }
-}
-
-@interface VLTPBSensorBuilder()
-@property (strong) VLTPBSensor* resultSensor;
-@end
-
-@implementation VLTPBSensorBuilder
-@synthesize resultSensor;
-- (instancetype) init {
-  if ((self = [super init])) {
-    self.resultSensor = [[VLTPBSensor alloc] init];
-  }
-  return self;
-}
-- (PBGeneratedMessage*) internalGetResult {
-  return resultSensor;
-}
-- (VLTPBSensorBuilder*) clear {
-  self.resultSensor = [[VLTPBSensor alloc] init];
-  return self;
-}
-- (VLTPBSensorBuilder*) clone {
-  return [VLTPBSensor builderWithPrototype:resultSensor];
-}
-- (VLTPBSensor*) defaultInstance {
-  return [VLTPBSensor defaultInstance];
-}
-- (VLTPBSensor*) build {
-  [self checkInitialized];
-  return [self buildPartial];
-}
-- (VLTPBSensor*) buildPartial {
-  VLTPBSensor* returnMe = resultSensor;
-  self.resultSensor = nil;
-  return returnMe;
-}
-- (VLTPBSensorBuilder*) mergeFrom:(VLTPBSensor*) other {
-  if (other == [VLTPBSensor defaultInstance]) {
-    return self;
-  }
-  if (other.hasType) {
-    [self setType:other.type];
-  }
-  if (other.samplesArray.count > 0) {
-    if (resultSensor.samplesArray == nil) {
-      resultSensor.samplesArray = [[NSMutableArray alloc] initWithArray:other.samplesArray];
-    } else {
-      [resultSensor.samplesArray addObjectsFromArray:other.samplesArray];
-    }
-  }
-  [self mergeUnknownFields:other.unknownFields];
-  return self;
-}
-- (VLTPBSensorBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
-  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
-}
-- (VLTPBSensorBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
-  while (YES) {
-    SInt32 tag = [input readTag];
-    switch (tag) {
-      case 0:
-        [self setUnknownFields:[unknownFields build]];
-        return self;
-      default: {
-        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
-          [self setUnknownFields:[unknownFields build]];
-          return self;
-        }
-        break;
-      }
-      case 8: {
-        VLTPBSensorType value = (VLTPBSensorType)[input readEnum];
-        if (VLTPBSensorTypeIsValidValue(value)) {
-          [self setType:value];
-        } else {
-          [unknownFields mergeVarintField:1 value:value];
-        }
-        break;
-      }
-      case 18: {
-        VLTPBSampleBuilder* subBuilder = [VLTPBSample builder];
-        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
-        [self addSamples:[subBuilder buildPartial]];
-        break;
-      }
-    }
-  }
-}
-- (BOOL) hasType {
-  return resultSensor.hasType;
-}
-- (VLTPBSensorType) type {
-  return resultSensor.type;
-}
-- (VLTPBSensorBuilder*) setType:(VLTPBSensorType) value {
-  resultSensor.hasType = YES;
-  resultSensor.type = value;
-  return self;
-}
-- (VLTPBSensorBuilder*) clearType {
-  resultSensor.hasType = NO;
-  resultSensor.type = VLTPBSensorTypeAccel;
-  return self;
-}
-- (NSMutableArray *)samples {
-  return resultSensor.samplesArray;
-}
-- (VLTPBSample*)samplesAtIndex:(NSUInteger)index {
-  return [resultSensor samplesAtIndex:index];
-}
-- (VLTPBSensorBuilder *)addSamples:(VLTPBSample*)value {
-  if (resultSensor.samplesArray == nil) {
-    resultSensor.samplesArray = [[NSMutableArray alloc]init];
-  }
-  [resultSensor.samplesArray addObject:value];
-  return self;
-}
-- (VLTPBSensorBuilder *)setSamplesArray:(NSArray *)array {
-  resultSensor.samplesArray = [[NSMutableArray alloc]initWithArray:array];
-  return self;
-}
-- (VLTPBSensorBuilder *)clearSamples {
-  resultSensor.samplesArray = nil;
-  return self;
-}
-@end
-
-@interface VLTPBSample ()
-@property Float64 timestamp;
-@property (strong) PBAppendableArray * valuesArray;
-@end
-
-@implementation VLTPBSample
-
-- (BOOL) hasTimestamp {
-  return !!hasTimestamp_;
-}
-- (void) setHasTimestamp:(BOOL) _value_ {
-  hasTimestamp_ = !!_value_;
-}
-@synthesize timestamp;
-@synthesize valuesArray;
-@dynamic values;
-- (instancetype) init {
-  if ((self = [super init])) {
-    self.timestamp = 0;
-  }
-  return self;
-}
-static VLTPBSample* defaultVLTPBSampleInstance = nil;
-+ (void) initialize {
-  if (self == [VLTPBSample class]) {
-    defaultVLTPBSampleInstance = [[VLTPBSample alloc] init];
-  }
-}
-+ (instancetype) defaultInstance {
-  return defaultVLTPBSampleInstance;
-}
-- (instancetype) defaultInstance {
-  return defaultVLTPBSampleInstance;
-}
-- (PBArray *)values {
-  return valuesArray;
-}
-- (Float32)valuesAtIndex:(NSUInteger)index {
-  return [valuesArray floatAtIndex:index];
-}
-- (BOOL) isInitialized {
-  if (!self.hasTimestamp) {
-    return NO;
-  }
-  return YES;
-}
-- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
-  if (self.hasTimestamp) {
-    [output writeDouble:1 value:self.timestamp];
-  }
-  const NSUInteger valuesArrayCount = self.valuesArray.count;
-  if (valuesArrayCount > 0) {
-    const Float32 *values = (const Float32 *)self.valuesArray.data;
-    for (NSUInteger i = 0; i < valuesArrayCount; ++i) {
-      [output writeFloat:2 value:values[i]];
-    }
-  }
-  [self.unknownFields writeToCodedOutputStream:output];
-}
-- (SInt32) serializedSize {
-  __block SInt32 size_ = memoizedSerializedSize;
-  if (size_ != -1) {
-    return size_;
-  }
-
-  size_ = 0;
-  if (self.hasTimestamp) {
-    size_ += computeDoubleSize(1, self.timestamp);
-  }
-  {
-    __block SInt32 dataSize = 0;
-    const NSUInteger count = self.valuesArray.count;
-    dataSize = (SInt32)(4 * count);
-    size_ += dataSize;
-    size_ += (SInt32)(1 * count);
-  }
-  size_ += self.unknownFields.serializedSize;
-  memoizedSerializedSize = size_;
-  return size_;
-}
-+ (VLTPBSample*) parseFromData:(NSData*) data {
-  return (VLTPBSample*)[[[VLTPBSample builder] mergeFromData:data] build];
-}
-+ (VLTPBSample*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (VLTPBSample*)[[[VLTPBSample builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
-}
-+ (VLTPBSample*) parseFromInputStream:(NSInputStream*) input {
-  return (VLTPBSample*)[[[VLTPBSample builder] mergeFromInputStream:input] build];
-}
-+ (VLTPBSample*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (VLTPBSample*)[[[VLTPBSample builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
-}
-+ (VLTPBSample*) parseFromCodedInputStream:(PBCodedInputStream*) input {
-  return (VLTPBSample*)[[[VLTPBSample builder] mergeFromCodedInputStream:input] build];
-}
-+ (VLTPBSample*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (VLTPBSample*)[[[VLTPBSample builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
-}
-+ (VLTPBSampleBuilder*) builder {
-  return [[VLTPBSampleBuilder alloc] init];
-}
-+ (VLTPBSampleBuilder*) builderWithPrototype:(VLTPBSample*) prototype {
-  return [[VLTPBSample builder] mergeFrom:prototype];
-}
-- (VLTPBSampleBuilder*) builder {
-  return [VLTPBSample builder];
-}
-- (VLTPBSampleBuilder*) toBuilder {
-  return [VLTPBSample builderWithPrototype:self];
-}
-- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
-  if (self.hasTimestamp) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"timestamp", [NSNumber numberWithDouble:self.timestamp]];
-  }
-  [self.valuesArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"values", obj];
-  }];
-  [self.unknownFields writeDescriptionTo:output withIndent:indent];
-}
-- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
-  if (self.hasTimestamp) {
-    [dictionary setObject: [NSNumber numberWithDouble:self.timestamp] forKey: @"timestamp"];
-  }
-  NSMutableArray * valuesArrayArray = [NSMutableArray new];
-  NSUInteger valuesArrayCount=self.valuesArray.count;
-  for(int i=0;i<valuesArrayCount;i++){
-    [valuesArrayArray addObject: @([self.valuesArray floatAtIndex:i])];
-  }
-  [dictionary setObject: valuesArrayArray forKey: @"values"];
-  [self.unknownFields storeInDictionary:dictionary];
-}
-- (BOOL) isEqual:(id)other {
-  if (other == self) {
-    return YES;
-  }
-  if (![other isKindOfClass:[VLTPBSample class]]) {
-    return NO;
-  }
-  VLTPBSample *otherMessage = other;
-  return
-      self.hasTimestamp == otherMessage.hasTimestamp &&
-      (!self.hasTimestamp || self.timestamp == otherMessage.timestamp) &&
-      [self.valuesArray isEqualToArray:otherMessage.valuesArray] &&
-      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
-}
-- (NSUInteger) hash {
-  __block NSUInteger hashCode = 7;
-  if (self.hasTimestamp) {
-    hashCode = hashCode * 31 + [[NSNumber numberWithDouble:self.timestamp] hash];
-  }
-  [self.valuesArray enumerateObjectsUsingBlock:^(NSNumber *obj, NSUInteger idx, BOOL *stop) {
-    hashCode = hashCode * 31 + [obj longValue];
-  }];
-  hashCode = hashCode * 31 + [self.unknownFields hash];
-  return hashCode;
-}
-@end
-
-@interface VLTPBSampleBuilder()
-@property (strong) VLTPBSample* resultSample;
-@end
-
-@implementation VLTPBSampleBuilder
-@synthesize resultSample;
-- (instancetype) init {
-  if ((self = [super init])) {
-    self.resultSample = [[VLTPBSample alloc] init];
-  }
-  return self;
-}
-- (PBGeneratedMessage*) internalGetResult {
-  return resultSample;
-}
-- (VLTPBSampleBuilder*) clear {
-  self.resultSample = [[VLTPBSample alloc] init];
-  return self;
-}
-- (VLTPBSampleBuilder*) clone {
-  return [VLTPBSample builderWithPrototype:resultSample];
-}
-- (VLTPBSample*) defaultInstance {
-  return [VLTPBSample defaultInstance];
-}
-- (VLTPBSample*) build {
-  [self checkInitialized];
-  return [self buildPartial];
-}
-- (VLTPBSample*) buildPartial {
-  VLTPBSample* returnMe = resultSample;
-  self.resultSample = nil;
-  return returnMe;
-}
-- (VLTPBSampleBuilder*) mergeFrom:(VLTPBSample*) other {
-  if (other == [VLTPBSample defaultInstance]) {
-    return self;
-  }
-  if (other.hasTimestamp) {
-    [self setTimestamp:other.timestamp];
-  }
-  if (other.valuesArray.count > 0) {
-    if (resultSample.valuesArray == nil) {
-      resultSample.valuesArray = [other.valuesArray copy];
-    } else {
-      [resultSample.valuesArray appendArray:other.valuesArray];
-    }
-  }
-  [self mergeUnknownFields:other.unknownFields];
-  return self;
-}
-- (VLTPBSampleBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
-  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
-}
-- (VLTPBSampleBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
-  while (YES) {
-    SInt32 tag = [input readTag];
-    switch (tag) {
-      case 0:
-        [self setUnknownFields:[unknownFields build]];
-        return self;
-      default: {
-        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
-          [self setUnknownFields:[unknownFields build]];
-          return self;
-        }
-        break;
-      }
-      case 9: {
-        [self setTimestamp:[input readDouble]];
-        break;
-      }
-      case 21: {
-        [self addValues:[input readFloat]];
-        break;
-      }
-    }
-  }
-}
-- (BOOL) hasTimestamp {
-  return resultSample.hasTimestamp;
-}
-- (Float64) timestamp {
-  return resultSample.timestamp;
-}
-- (VLTPBSampleBuilder*) setTimestamp:(Float64) value {
-  resultSample.hasTimestamp = YES;
-  resultSample.timestamp = value;
-  return self;
-}
-- (VLTPBSampleBuilder*) clearTimestamp {
-  resultSample.hasTimestamp = NO;
-  resultSample.timestamp = 0;
-  return self;
-}
-- (PBAppendableArray *)values {
-  return resultSample.valuesArray;
-}
-- (Float32)valuesAtIndex:(NSUInteger)index {
-  return [resultSample valuesAtIndex:index];
-}
-- (VLTPBSampleBuilder *)addValues:(Float32)value {
-  if (resultSample.valuesArray == nil) {
-    resultSample.valuesArray = [PBAppendableArray arrayWithValueType:PBArrayValueTypeFloat];
-  }
-  [resultSample.valuesArray addFloat:value];
-  return self;
-}
-- (VLTPBSampleBuilder *)setValuesArray:(NSArray *)array {
-  resultSample.valuesArray = [PBAppendableArray arrayWithArray:array valueType:PBArrayValueTypeFloat];
-  return self;
-}
-- (VLTPBSampleBuilder *)setValuesValues:(const Float32 *)values count:(NSUInteger)count {
-  resultSample.valuesArray = [PBAppendableArray arrayWithValues:values count:count valueType:PBArrayValueTypeFloat];
-  return self;
-}
-- (VLTPBSampleBuilder *)clearValues {
-  resultSample.valuesArray = nil;
-  return self;
-}
-@end
-
 @interface VLTPBDetectMotionRequest ()
 @property (strong) NSString* id;
 @property (strong) NSString* userId;
+@property (strong) NSMutableArray * modelNameArray;
+@property (strong) NSMutableArray<VLTPBSensor*> * sensorsArray;
 @property UInt32 sequenceIndex;
 @property VLTPBPlatformType platform;
 @property Float64 timestamp;
-@property (strong) NSMutableArray * modelNameArray;
-@property (strong) NSMutableArray * sensorsArray;
 @end
 
 @implementation VLTPBDetectMotionRequest
@@ -1249,6 +1249,10 @@ static VLTPBSample* defaultVLTPBSampleInstance = nil;
   hasUserId_ = !!_value_;
 }
 @synthesize userId;
+@synthesize modelNameArray;
+@dynamic modelName;
+@synthesize sensorsArray;
+@dynamic sensors;
 - (BOOL) hasSequenceIndex {
   return !!hasSequenceIndex_;
 }
@@ -1270,10 +1274,6 @@ static VLTPBSample* defaultVLTPBSampleInstance = nil;
   hasTimestamp_ = !!_value_;
 }
 @synthesize timestamp;
-@synthesize modelNameArray;
-@dynamic modelName;
-@synthesize sensorsArray;
-@dynamic sensors;
 - (instancetype) init {
   if ((self = [super init])) {
     self.id = @"";
@@ -1302,7 +1302,7 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
 - (NSString*)modelNameAtIndex:(NSUInteger)index {
   return [modelNameArray objectAtIndex:index];
 }
-- (NSArray *)sensors {
+- (NSArray<VLTPBSensor*> *)sensors {
   return sensorsArray;
 }
 - (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index {
@@ -1341,21 +1341,21 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
   if (self.hasUserId) {
     [output writeString:2 value:self.userId];
   }
-  if (self.hasSequenceIndex) {
-    [output writeUInt32:3 value:self.sequenceIndex];
-  }
-  if (self.hasPlatform) {
-    [output writeEnum:4 value:self.platform];
-  }
-  if (self.hasTimestamp) {
-    [output writeDouble:5 value:self.timestamp];
-  }
   [self.modelNameArray enumerateObjectsUsingBlock:^(NSString *element, NSUInteger idx, BOOL *stop) {
-    [output writeString:6 value:element];
+    [output writeString:3 value:element];
   }];
   [self.sensorsArray enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
-    [output writeMessage:7 value:element];
+    [output writeMessage:4 value:element];
   }];
+  if (self.hasSequenceIndex) {
+    [output writeUInt32:5 value:self.sequenceIndex];
+  }
+  if (self.hasPlatform) {
+    [output writeEnum:6 value:self.platform];
+  }
+  if (self.hasTimestamp) {
+    [output writeDouble:7 value:self.timestamp];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -1371,15 +1371,6 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
   if (self.hasUserId) {
     size_ += computeStringSize(2, self.userId);
   }
-  if (self.hasSequenceIndex) {
-    size_ += computeUInt32Size(3, self.sequenceIndex);
-  }
-  if (self.hasPlatform) {
-    size_ += computeEnumSize(4, self.platform);
-  }
-  if (self.hasTimestamp) {
-    size_ += computeDoubleSize(5, self.timestamp);
-  }
   {
     __block SInt32 dataSize = 0;
     const NSUInteger count = self.modelNameArray.count;
@@ -1390,8 +1381,17 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
     size_ += (SInt32)(1 * count);
   }
   [self.sensorsArray enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
-    size_ += computeMessageSize(7, element);
+    size_ += computeMessageSize(4, element);
   }];
+  if (self.hasSequenceIndex) {
+    size_ += computeUInt32Size(5, self.sequenceIndex);
+  }
+  if (self.hasPlatform) {
+    size_ += computeEnumSize(6, self.platform);
+  }
+  if (self.hasTimestamp) {
+    size_ += computeDoubleSize(7, self.timestamp);
+  }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
   return size_;
@@ -1433,15 +1433,6 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
   if (self.hasUserId) {
     [output appendFormat:@"%@%@: %@\n", indent, @"userId", self.userId];
   }
-  if (self.hasSequenceIndex) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"sequenceIndex", [NSNumber numberWithInteger:self.sequenceIndex]];
-  }
-  if (self.hasPlatform) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"platform", NSStringFromVLTPBPlatformType(self.platform)];
-  }
-  if (self.hasTimestamp) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"timestamp", [NSNumber numberWithDouble:self.timestamp]];
-  }
   [self.modelNameArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
     [output appendFormat:@"%@%@: %@\n", indent, @"modelName", obj];
   }];
@@ -1451,6 +1442,15 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
                      withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }];
+  if (self.hasSequenceIndex) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"sequenceIndex", [NSNumber numberWithInteger:self.sequenceIndex]];
+  }
+  if (self.hasPlatform) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"platform", NSStringFromVLTPBPlatformType(self.platform)];
+  }
+  if (self.hasTimestamp) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"timestamp", [NSNumber numberWithDouble:self.timestamp]];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -1460,6 +1460,12 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
   if (self.hasUserId) {
     [dictionary setObject: self.userId forKey: @"userId"];
   }
+  [dictionary setObject:self.modelName forKey: @"modelName"];
+  for (VLTPBSensor* element in self.sensorsArray) {
+    NSMutableDictionary *elementDictionary = [NSMutableDictionary dictionary];
+    [element storeInDictionary:elementDictionary];
+    [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"sensors"];
+  }
   if (self.hasSequenceIndex) {
     [dictionary setObject: [NSNumber numberWithInteger:self.sequenceIndex] forKey: @"sequenceIndex"];
   }
@@ -1468,12 +1474,6 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
   }
   if (self.hasTimestamp) {
     [dictionary setObject: [NSNumber numberWithDouble:self.timestamp] forKey: @"timestamp"];
-  }
-  [dictionary setObject:self.modelName forKey: @"modelName"];
-  for (VLTPBSensor* element in self.sensorsArray) {
-    NSMutableDictionary *elementDictionary = [NSMutableDictionary dictionary];
-    [element storeInDictionary:elementDictionary];
-    [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"sensors"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -1490,14 +1490,14 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
       (!self.hasId || [self.id isEqual:otherMessage.id]) &&
       self.hasUserId == otherMessage.hasUserId &&
       (!self.hasUserId || [self.userId isEqual:otherMessage.userId]) &&
+      [self.modelNameArray isEqualToArray:otherMessage.modelNameArray] &&
+      [self.sensorsArray isEqualToArray:otherMessage.sensorsArray] &&
       self.hasSequenceIndex == otherMessage.hasSequenceIndex &&
       (!self.hasSequenceIndex || self.sequenceIndex == otherMessage.sequenceIndex) &&
       self.hasPlatform == otherMessage.hasPlatform &&
       (!self.hasPlatform || self.platform == otherMessage.platform) &&
       self.hasTimestamp == otherMessage.hasTimestamp &&
       (!self.hasTimestamp || self.timestamp == otherMessage.timestamp) &&
-      [self.modelNameArray isEqualToArray:otherMessage.modelNameArray] &&
-      [self.sensorsArray isEqualToArray:otherMessage.sensorsArray] &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -1508,6 +1508,12 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
   if (self.hasUserId) {
     hashCode = hashCode * 31 + [self.userId hash];
   }
+  [self.modelNameArray enumerateObjectsUsingBlock:^(NSString *element, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [element hash];
+  }];
+  [self.sensorsArray enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [element hash];
+  }];
   if (self.hasSequenceIndex) {
     hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.sequenceIndex] hash];
   }
@@ -1517,12 +1523,6 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
   if (self.hasTimestamp) {
     hashCode = hashCode * 31 + [[NSNumber numberWithDouble:self.timestamp] hash];
   }
-  [self.modelNameArray enumerateObjectsUsingBlock:^(NSString *element, NSUInteger idx, BOOL *stop) {
-    hashCode = hashCode * 31 + [element hash];
-  }];
-  [self.sensorsArray enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
-    hashCode = hashCode * 31 + [element hash];
-  }];
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
 }
@@ -1572,15 +1572,6 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
   if (other.hasUserId) {
     [self setUserId:other.userId];
   }
-  if (other.hasSequenceIndex) {
-    [self setSequenceIndex:other.sequenceIndex];
-  }
-  if (other.hasPlatform) {
-    [self setPlatform:other.platform];
-  }
-  if (other.hasTimestamp) {
-    [self setTimestamp:other.timestamp];
-  }
   if (other.modelNameArray.count > 0) {
     if (resultDetectMotionRequest.modelNameArray == nil) {
       resultDetectMotionRequest.modelNameArray = [[NSMutableArray alloc] initWithArray:other.modelNameArray];
@@ -1594,6 +1585,15 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
     } else {
       [resultDetectMotionRequest.sensorsArray addObjectsFromArray:other.sensorsArray];
     }
+  }
+  if (other.hasSequenceIndex) {
+    [self setSequenceIndex:other.sequenceIndex];
+  }
+  if (other.hasPlatform) {
+    [self setPlatform:other.platform];
+  }
+  if (other.hasTimestamp) {
+    [self setTimestamp:other.timestamp];
   }
   [self mergeUnknownFields:other.unknownFields];
   return self;
@@ -1624,31 +1624,31 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
         [self setUserId:[input readString]];
         break;
       }
-      case 24: {
+      case 26: {
+        [self addModelName:[input readString]];
+        break;
+      }
+      case 34: {
+        VLTPBSensorBuilder* subBuilder = [VLTPBSensor builder];
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self addSensors:[subBuilder buildPartial]];
+        break;
+      }
+      case 40: {
         [self setSequenceIndex:[input readUInt32]];
         break;
       }
-      case 32: {
+      case 48: {
         VLTPBPlatformType value = (VLTPBPlatformType)[input readEnum];
         if (VLTPBPlatformTypeIsValidValue(value)) {
           [self setPlatform:value];
         } else {
-          [unknownFields mergeVarintField:4 value:value];
+          [unknownFields mergeVarintField:6 value:value];
         }
         break;
       }
-      case 41: {
+      case 57: {
         [self setTimestamp:[input readDouble]];
-        break;
-      }
-      case 50: {
-        [self addModelName:[input readString]];
-        break;
-      }
-      case 58: {
-        VLTPBSensorBuilder* subBuilder = [VLTPBSensor builder];
-        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
-        [self addSensors:[subBuilder buildPartial]];
         break;
       }
     }
@@ -1684,6 +1684,48 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
 - (VLTPBDetectMotionRequestBuilder*) clearUserId {
   resultDetectMotionRequest.hasUserId = NO;
   resultDetectMotionRequest.userId = @"";
+  return self;
+}
+- (NSMutableArray *)modelName {
+  return resultDetectMotionRequest.modelNameArray;
+}
+- (NSString*)modelNameAtIndex:(NSUInteger)index {
+  return [resultDetectMotionRequest modelNameAtIndex:index];
+}
+- (VLTPBDetectMotionRequestBuilder *)addModelName:(NSString*)value {
+  if (resultDetectMotionRequest.modelNameArray == nil) {
+    resultDetectMotionRequest.modelNameArray = [[NSMutableArray alloc]init];
+  }
+  [resultDetectMotionRequest.modelNameArray addObject:value];
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder *)setModelNameArray:(NSArray *)array {
+  resultDetectMotionRequest.modelNameArray = [[NSMutableArray alloc] initWithArray:array];
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder *)clearModelName {
+  resultDetectMotionRequest.modelNameArray = nil;
+  return self;
+}
+- (NSMutableArray<VLTPBSensor*> *)sensors {
+  return resultDetectMotionRequest.sensorsArray;
+}
+- (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index {
+  return [resultDetectMotionRequest sensorsAtIndex:index];
+}
+- (VLTPBDetectMotionRequestBuilder *)addSensors:(VLTPBSensor*)value {
+  if (resultDetectMotionRequest.sensorsArray == nil) {
+    resultDetectMotionRequest.sensorsArray = [[NSMutableArray alloc]init];
+  }
+  [resultDetectMotionRequest.sensorsArray addObject:value];
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder *)setSensorsArray:(NSArray<VLTPBSensor*> *)array {
+  resultDetectMotionRequest.sensorsArray = [[NSMutableArray alloc]initWithArray:array];
+  return self;
+}
+- (VLTPBDetectMotionRequestBuilder *)clearSensors {
+  resultDetectMotionRequest.sensorsArray = nil;
   return self;
 }
 - (BOOL) hasSequenceIndex {
@@ -1734,46 +1776,2266 @@ static VLTPBDetectMotionRequest* defaultVLTPBDetectMotionRequestInstance = nil;
   resultDetectMotionRequest.timestamp = 0;
   return self;
 }
-- (NSMutableArray *)modelName {
-  return resultDetectMotionRequest.modelNameArray;
+@end
+
+@interface VLTPBHandshakeRequest ()
+@property (strong) NSString* authToken;
+@property (strong) NSString* idfa;
+@property (strong) NSString* userId;
+@property (strong) NSString* appId;
+@property VLTPBPlatformType platform;
+@end
+
+@implementation VLTPBHandshakeRequest
+
+- (BOOL) hasAuthToken {
+  return !!hasAuthToken_;
 }
-- (NSString*)modelNameAtIndex:(NSUInteger)index {
-  return [resultDetectMotionRequest modelNameAtIndex:index];
+- (void) setHasAuthToken:(BOOL) _value_ {
+  hasAuthToken_ = !!_value_;
 }
-- (VLTPBDetectMotionRequestBuilder *)addModelName:(NSString*)value {
-  if (resultDetectMotionRequest.modelNameArray == nil) {
-    resultDetectMotionRequest.modelNameArray = [[NSMutableArray alloc]init];
+@synthesize authToken;
+- (BOOL) hasIdfa {
+  return !!hasIdfa_;
+}
+- (void) setHasIdfa:(BOOL) _value_ {
+  hasIdfa_ = !!_value_;
+}
+@synthesize idfa;
+- (BOOL) hasUserId {
+  return !!hasUserId_;
+}
+- (void) setHasUserId:(BOOL) _value_ {
+  hasUserId_ = !!_value_;
+}
+@synthesize userId;
+- (BOOL) hasAppId {
+  return !!hasAppId_;
+}
+- (void) setHasAppId:(BOOL) _value_ {
+  hasAppId_ = !!_value_;
+}
+@synthesize appId;
+- (BOOL) hasPlatform {
+  return !!hasPlatform_;
+}
+- (void) setHasPlatform:(BOOL) _value_ {
+  hasPlatform_ = !!_value_;
+}
+@synthesize platform;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.authToken = @"";
+    self.idfa = @"";
+    self.userId = @"";
+    self.appId = @"";
+    self.platform = VLTPBPlatformTypeIos;
   }
-  [resultDetectMotionRequest.modelNameArray addObject:value];
   return self;
 }
-- (VLTPBDetectMotionRequestBuilder *)setModelNameArray:(NSArray *)array {
-  resultDetectMotionRequest.modelNameArray = [[NSMutableArray alloc] initWithArray:array];
+static VLTPBHandshakeRequest* defaultVLTPBHandshakeRequestInstance = nil;
++ (void) initialize {
+  if (self == [VLTPBHandshakeRequest class]) {
+    defaultVLTPBHandshakeRequestInstance = [[VLTPBHandshakeRequest alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultVLTPBHandshakeRequestInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultVLTPBHandshakeRequestInstance;
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasAuthToken) {
+    [output writeString:1 value:self.authToken];
+  }
+  if (self.hasIdfa) {
+    [output writeString:2 value:self.idfa];
+  }
+  if (self.hasUserId) {
+    [output writeString:3 value:self.userId];
+  }
+  if (self.hasAppId) {
+    [output writeString:4 value:self.appId];
+  }
+  if (self.hasPlatform) {
+    [output writeEnum:5 value:self.platform];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasAuthToken) {
+    size_ += computeStringSize(1, self.authToken);
+  }
+  if (self.hasIdfa) {
+    size_ += computeStringSize(2, self.idfa);
+  }
+  if (self.hasUserId) {
+    size_ += computeStringSize(3, self.userId);
+  }
+  if (self.hasAppId) {
+    size_ += computeStringSize(4, self.appId);
+  }
+  if (self.hasPlatform) {
+    size_ += computeEnumSize(5, self.platform);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (VLTPBHandshakeRequest*) parseFromData:(NSData*) data {
+  return (VLTPBHandshakeRequest*)[[[VLTPBHandshakeRequest builder] mergeFromData:data] build];
+}
++ (VLTPBHandshakeRequest*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBHandshakeRequest*)[[[VLTPBHandshakeRequest builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBHandshakeRequest*) parseFromInputStream:(NSInputStream*) input {
+  return (VLTPBHandshakeRequest*)[[[VLTPBHandshakeRequest builder] mergeFromInputStream:input] build];
+}
++ (VLTPBHandshakeRequest*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBHandshakeRequest*)[[[VLTPBHandshakeRequest builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBHandshakeRequest*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (VLTPBHandshakeRequest*)[[[VLTPBHandshakeRequest builder] mergeFromCodedInputStream:input] build];
+}
++ (VLTPBHandshakeRequest*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBHandshakeRequest*)[[[VLTPBHandshakeRequest builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBHandshakeRequestBuilder*) builder {
+  return [[VLTPBHandshakeRequestBuilder alloc] init];
+}
++ (VLTPBHandshakeRequestBuilder*) builderWithPrototype:(VLTPBHandshakeRequest*) prototype {
+  return [[VLTPBHandshakeRequest builder] mergeFrom:prototype];
+}
+- (VLTPBHandshakeRequestBuilder*) builder {
+  return [VLTPBHandshakeRequest builder];
+}
+- (VLTPBHandshakeRequestBuilder*) toBuilder {
+  return [VLTPBHandshakeRequest builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasAuthToken) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"authToken", self.authToken];
+  }
+  if (self.hasIdfa) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"idfa", self.idfa];
+  }
+  if (self.hasUserId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"userId", self.userId];
+  }
+  if (self.hasAppId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"appId", self.appId];
+  }
+  if (self.hasPlatform) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"platform", NSStringFromVLTPBPlatformType(self.platform)];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasAuthToken) {
+    [dictionary setObject: self.authToken forKey: @"authToken"];
+  }
+  if (self.hasIdfa) {
+    [dictionary setObject: self.idfa forKey: @"idfa"];
+  }
+  if (self.hasUserId) {
+    [dictionary setObject: self.userId forKey: @"userId"];
+  }
+  if (self.hasAppId) {
+    [dictionary setObject: self.appId forKey: @"appId"];
+  }
+  if (self.hasPlatform) {
+    [dictionary setObject: @(self.platform) forKey: @"platform"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[VLTPBHandshakeRequest class]]) {
+    return NO;
+  }
+  VLTPBHandshakeRequest *otherMessage = other;
+  return
+      self.hasAuthToken == otherMessage.hasAuthToken &&
+      (!self.hasAuthToken || [self.authToken isEqual:otherMessage.authToken]) &&
+      self.hasIdfa == otherMessage.hasIdfa &&
+      (!self.hasIdfa || [self.idfa isEqual:otherMessage.idfa]) &&
+      self.hasUserId == otherMessage.hasUserId &&
+      (!self.hasUserId || [self.userId isEqual:otherMessage.userId]) &&
+      self.hasAppId == otherMessage.hasAppId &&
+      (!self.hasAppId || [self.appId isEqual:otherMessage.appId]) &&
+      self.hasPlatform == otherMessage.hasPlatform &&
+      (!self.hasPlatform || self.platform == otherMessage.platform) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasAuthToken) {
+    hashCode = hashCode * 31 + [self.authToken hash];
+  }
+  if (self.hasIdfa) {
+    hashCode = hashCode * 31 + [self.idfa hash];
+  }
+  if (self.hasUserId) {
+    hashCode = hashCode * 31 + [self.userId hash];
+  }
+  if (self.hasAppId) {
+    hashCode = hashCode * 31 + [self.appId hash];
+  }
+  if (self.hasPlatform) {
+    hashCode = hashCode * 31 + self.platform;
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface VLTPBHandshakeRequestBuilder()
+@property (strong) VLTPBHandshakeRequest* resultHandshakeRequest;
+@end
+
+@implementation VLTPBHandshakeRequestBuilder
+@synthesize resultHandshakeRequest;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultHandshakeRequest = [[VLTPBHandshakeRequest alloc] init];
+  }
   return self;
 }
-- (VLTPBDetectMotionRequestBuilder *)clearModelName {
-  resultDetectMotionRequest.modelNameArray = nil;
+- (PBGeneratedMessage*) internalGetResult {
+  return resultHandshakeRequest;
+}
+- (VLTPBHandshakeRequestBuilder*) clear {
+  self.resultHandshakeRequest = [[VLTPBHandshakeRequest alloc] init];
   return self;
 }
-- (NSMutableArray *)sensors {
-  return resultDetectMotionRequest.sensorsArray;
+- (VLTPBHandshakeRequestBuilder*) clone {
+  return [VLTPBHandshakeRequest builderWithPrototype:resultHandshakeRequest];
+}
+- (VLTPBHandshakeRequest*) defaultInstance {
+  return [VLTPBHandshakeRequest defaultInstance];
+}
+- (VLTPBHandshakeRequest*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (VLTPBHandshakeRequest*) buildPartial {
+  VLTPBHandshakeRequest* returnMe = resultHandshakeRequest;
+  self.resultHandshakeRequest = nil;
+  return returnMe;
+}
+- (VLTPBHandshakeRequestBuilder*) mergeFrom:(VLTPBHandshakeRequest*) other {
+  if (other == [VLTPBHandshakeRequest defaultInstance]) {
+    return self;
+  }
+  if (other.hasAuthToken) {
+    [self setAuthToken:other.authToken];
+  }
+  if (other.hasIdfa) {
+    [self setIdfa:other.idfa];
+  }
+  if (other.hasUserId) {
+    [self setUserId:other.userId];
+  }
+  if (other.hasAppId) {
+    [self setAppId:other.appId];
+  }
+  if (other.hasPlatform) {
+    [self setPlatform:other.platform];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (VLTPBHandshakeRequestBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (VLTPBHandshakeRequestBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        [self setAuthToken:[input readString]];
+        break;
+      }
+      case 18: {
+        [self setIdfa:[input readString]];
+        break;
+      }
+      case 26: {
+        [self setUserId:[input readString]];
+        break;
+      }
+      case 34: {
+        [self setAppId:[input readString]];
+        break;
+      }
+      case 40: {
+        VLTPBPlatformType value = (VLTPBPlatformType)[input readEnum];
+        if (VLTPBPlatformTypeIsValidValue(value)) {
+          [self setPlatform:value];
+        } else {
+          [unknownFields mergeVarintField:5 value:value];
+        }
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasAuthToken {
+  return resultHandshakeRequest.hasAuthToken;
+}
+- (NSString*) authToken {
+  return resultHandshakeRequest.authToken;
+}
+- (VLTPBHandshakeRequestBuilder*) setAuthToken:(NSString*) value {
+  resultHandshakeRequest.hasAuthToken = YES;
+  resultHandshakeRequest.authToken = value;
+  return self;
+}
+- (VLTPBHandshakeRequestBuilder*) clearAuthToken {
+  resultHandshakeRequest.hasAuthToken = NO;
+  resultHandshakeRequest.authToken = @"";
+  return self;
+}
+- (BOOL) hasIdfa {
+  return resultHandshakeRequest.hasIdfa;
+}
+- (NSString*) idfa {
+  return resultHandshakeRequest.idfa;
+}
+- (VLTPBHandshakeRequestBuilder*) setIdfa:(NSString*) value {
+  resultHandshakeRequest.hasIdfa = YES;
+  resultHandshakeRequest.idfa = value;
+  return self;
+}
+- (VLTPBHandshakeRequestBuilder*) clearIdfa {
+  resultHandshakeRequest.hasIdfa = NO;
+  resultHandshakeRequest.idfa = @"";
+  return self;
+}
+- (BOOL) hasUserId {
+  return resultHandshakeRequest.hasUserId;
+}
+- (NSString*) userId {
+  return resultHandshakeRequest.userId;
+}
+- (VLTPBHandshakeRequestBuilder*) setUserId:(NSString*) value {
+  resultHandshakeRequest.hasUserId = YES;
+  resultHandshakeRequest.userId = value;
+  return self;
+}
+- (VLTPBHandshakeRequestBuilder*) clearUserId {
+  resultHandshakeRequest.hasUserId = NO;
+  resultHandshakeRequest.userId = @"";
+  return self;
+}
+- (BOOL) hasAppId {
+  return resultHandshakeRequest.hasAppId;
+}
+- (NSString*) appId {
+  return resultHandshakeRequest.appId;
+}
+- (VLTPBHandshakeRequestBuilder*) setAppId:(NSString*) value {
+  resultHandshakeRequest.hasAppId = YES;
+  resultHandshakeRequest.appId = value;
+  return self;
+}
+- (VLTPBHandshakeRequestBuilder*) clearAppId {
+  resultHandshakeRequest.hasAppId = NO;
+  resultHandshakeRequest.appId = @"";
+  return self;
+}
+- (BOOL) hasPlatform {
+  return resultHandshakeRequest.hasPlatform;
+}
+- (VLTPBPlatformType) platform {
+  return resultHandshakeRequest.platform;
+}
+- (VLTPBHandshakeRequestBuilder*) setPlatform:(VLTPBPlatformType) value {
+  resultHandshakeRequest.hasPlatform = YES;
+  resultHandshakeRequest.platform = value;
+  return self;
+}
+- (VLTPBHandshakeRequestBuilder*) clearPlatform {
+  resultHandshakeRequest.hasPlatform = NO;
+  resultHandshakeRequest.platform = VLTPBPlatformTypeIos;
+  return self;
+}
+@end
+
+@interface VLTPBHandshakeResponse ()
+@property Float64 sampleSize;
+@property Float64 captureInterval;
+@property BOOL canDetectMotion;
+@property BOOL canLabelMotion;
+@end
+
+@implementation VLTPBHandshakeResponse
+
+- (BOOL) hasSampleSize {
+  return !!hasSampleSize_;
+}
+- (void) setHasSampleSize:(BOOL) _value_ {
+  hasSampleSize_ = !!_value_;
+}
+@synthesize sampleSize;
+- (BOOL) hasCaptureInterval {
+  return !!hasCaptureInterval_;
+}
+- (void) setHasCaptureInterval:(BOOL) _value_ {
+  hasCaptureInterval_ = !!_value_;
+}
+@synthesize captureInterval;
+- (BOOL) hasCanDetectMotion {
+  return !!hasCanDetectMotion_;
+}
+- (void) setHasCanDetectMotion:(BOOL) _value_ {
+  hasCanDetectMotion_ = !!_value_;
+}
+- (BOOL) canDetectMotion {
+  return !!canDetectMotion_;
+}
+- (void) setCanDetectMotion:(BOOL) _value_ {
+  canDetectMotion_ = !!_value_;
+}
+- (BOOL) hasCanLabelMotion {
+  return !!hasCanLabelMotion_;
+}
+- (void) setHasCanLabelMotion:(BOOL) _value_ {
+  hasCanLabelMotion_ = !!_value_;
+}
+- (BOOL) canLabelMotion {
+  return !!canLabelMotion_;
+}
+- (void) setCanLabelMotion:(BOOL) _value_ {
+  canLabelMotion_ = !!_value_;
+}
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.sampleSize = 0;
+    self.captureInterval = 0;
+    self.canDetectMotion = NO;
+    self.canLabelMotion = NO;
+  }
+  return self;
+}
+static VLTPBHandshakeResponse* defaultVLTPBHandshakeResponseInstance = nil;
++ (void) initialize {
+  if (self == [VLTPBHandshakeResponse class]) {
+    defaultVLTPBHandshakeResponseInstance = [[VLTPBHandshakeResponse alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultVLTPBHandshakeResponseInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultVLTPBHandshakeResponseInstance;
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasSampleSize) {
+    [output writeDouble:1 value:self.sampleSize];
+  }
+  if (self.hasCaptureInterval) {
+    [output writeDouble:2 value:self.captureInterval];
+  }
+  if (self.hasCanDetectMotion) {
+    [output writeBool:3 value:self.canDetectMotion];
+  }
+  if (self.hasCanLabelMotion) {
+    [output writeBool:4 value:self.canLabelMotion];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasSampleSize) {
+    size_ += computeDoubleSize(1, self.sampleSize);
+  }
+  if (self.hasCaptureInterval) {
+    size_ += computeDoubleSize(2, self.captureInterval);
+  }
+  if (self.hasCanDetectMotion) {
+    size_ += computeBoolSize(3, self.canDetectMotion);
+  }
+  if (self.hasCanLabelMotion) {
+    size_ += computeBoolSize(4, self.canLabelMotion);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (VLTPBHandshakeResponse*) parseFromData:(NSData*) data {
+  return (VLTPBHandshakeResponse*)[[[VLTPBHandshakeResponse builder] mergeFromData:data] build];
+}
++ (VLTPBHandshakeResponse*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBHandshakeResponse*)[[[VLTPBHandshakeResponse builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBHandshakeResponse*) parseFromInputStream:(NSInputStream*) input {
+  return (VLTPBHandshakeResponse*)[[[VLTPBHandshakeResponse builder] mergeFromInputStream:input] build];
+}
++ (VLTPBHandshakeResponse*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBHandshakeResponse*)[[[VLTPBHandshakeResponse builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBHandshakeResponse*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (VLTPBHandshakeResponse*)[[[VLTPBHandshakeResponse builder] mergeFromCodedInputStream:input] build];
+}
++ (VLTPBHandshakeResponse*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBHandshakeResponse*)[[[VLTPBHandshakeResponse builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBHandshakeResponseBuilder*) builder {
+  return [[VLTPBHandshakeResponseBuilder alloc] init];
+}
++ (VLTPBHandshakeResponseBuilder*) builderWithPrototype:(VLTPBHandshakeResponse*) prototype {
+  return [[VLTPBHandshakeResponse builder] mergeFrom:prototype];
+}
+- (VLTPBHandshakeResponseBuilder*) builder {
+  return [VLTPBHandshakeResponse builder];
+}
+- (VLTPBHandshakeResponseBuilder*) toBuilder {
+  return [VLTPBHandshakeResponse builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasSampleSize) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"sampleSize", [NSNumber numberWithDouble:self.sampleSize]];
+  }
+  if (self.hasCaptureInterval) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"captureInterval", [NSNumber numberWithDouble:self.captureInterval]];
+  }
+  if (self.hasCanDetectMotion) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"canDetectMotion", [NSNumber numberWithBool:self.canDetectMotion]];
+  }
+  if (self.hasCanLabelMotion) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"canLabelMotion", [NSNumber numberWithBool:self.canLabelMotion]];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasSampleSize) {
+    [dictionary setObject: [NSNumber numberWithDouble:self.sampleSize] forKey: @"sampleSize"];
+  }
+  if (self.hasCaptureInterval) {
+    [dictionary setObject: [NSNumber numberWithDouble:self.captureInterval] forKey: @"captureInterval"];
+  }
+  if (self.hasCanDetectMotion) {
+    [dictionary setObject: [NSNumber numberWithBool:self.canDetectMotion] forKey: @"canDetectMotion"];
+  }
+  if (self.hasCanLabelMotion) {
+    [dictionary setObject: [NSNumber numberWithBool:self.canLabelMotion] forKey: @"canLabelMotion"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[VLTPBHandshakeResponse class]]) {
+    return NO;
+  }
+  VLTPBHandshakeResponse *otherMessage = other;
+  return
+      self.hasSampleSize == otherMessage.hasSampleSize &&
+      (!self.hasSampleSize || self.sampleSize == otherMessage.sampleSize) &&
+      self.hasCaptureInterval == otherMessage.hasCaptureInterval &&
+      (!self.hasCaptureInterval || self.captureInterval == otherMessage.captureInterval) &&
+      self.hasCanDetectMotion == otherMessage.hasCanDetectMotion &&
+      (!self.hasCanDetectMotion || self.canDetectMotion == otherMessage.canDetectMotion) &&
+      self.hasCanLabelMotion == otherMessage.hasCanLabelMotion &&
+      (!self.hasCanLabelMotion || self.canLabelMotion == otherMessage.canLabelMotion) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasSampleSize) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithDouble:self.sampleSize] hash];
+  }
+  if (self.hasCaptureInterval) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithDouble:self.captureInterval] hash];
+  }
+  if (self.hasCanDetectMotion) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.canDetectMotion] hash];
+  }
+  if (self.hasCanLabelMotion) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.canLabelMotion] hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface VLTPBHandshakeResponseBuilder()
+@property (strong) VLTPBHandshakeResponse* resultHandshakeResponse;
+@end
+
+@implementation VLTPBHandshakeResponseBuilder
+@synthesize resultHandshakeResponse;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultHandshakeResponse = [[VLTPBHandshakeResponse alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultHandshakeResponse;
+}
+- (VLTPBHandshakeResponseBuilder*) clear {
+  self.resultHandshakeResponse = [[VLTPBHandshakeResponse alloc] init];
+  return self;
+}
+- (VLTPBHandshakeResponseBuilder*) clone {
+  return [VLTPBHandshakeResponse builderWithPrototype:resultHandshakeResponse];
+}
+- (VLTPBHandshakeResponse*) defaultInstance {
+  return [VLTPBHandshakeResponse defaultInstance];
+}
+- (VLTPBHandshakeResponse*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (VLTPBHandshakeResponse*) buildPartial {
+  VLTPBHandshakeResponse* returnMe = resultHandshakeResponse;
+  self.resultHandshakeResponse = nil;
+  return returnMe;
+}
+- (VLTPBHandshakeResponseBuilder*) mergeFrom:(VLTPBHandshakeResponse*) other {
+  if (other == [VLTPBHandshakeResponse defaultInstance]) {
+    return self;
+  }
+  if (other.hasSampleSize) {
+    [self setSampleSize:other.sampleSize];
+  }
+  if (other.hasCaptureInterval) {
+    [self setCaptureInterval:other.captureInterval];
+  }
+  if (other.hasCanDetectMotion) {
+    [self setCanDetectMotion:other.canDetectMotion];
+  }
+  if (other.hasCanLabelMotion) {
+    [self setCanLabelMotion:other.canLabelMotion];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (VLTPBHandshakeResponseBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (VLTPBHandshakeResponseBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 9: {
+        [self setSampleSize:[input readDouble]];
+        break;
+      }
+      case 17: {
+        [self setCaptureInterval:[input readDouble]];
+        break;
+      }
+      case 24: {
+        [self setCanDetectMotion:[input readBool]];
+        break;
+      }
+      case 32: {
+        [self setCanLabelMotion:[input readBool]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasSampleSize {
+  return resultHandshakeResponse.hasSampleSize;
+}
+- (Float64) sampleSize {
+  return resultHandshakeResponse.sampleSize;
+}
+- (VLTPBHandshakeResponseBuilder*) setSampleSize:(Float64) value {
+  resultHandshakeResponse.hasSampleSize = YES;
+  resultHandshakeResponse.sampleSize = value;
+  return self;
+}
+- (VLTPBHandshakeResponseBuilder*) clearSampleSize {
+  resultHandshakeResponse.hasSampleSize = NO;
+  resultHandshakeResponse.sampleSize = 0;
+  return self;
+}
+- (BOOL) hasCaptureInterval {
+  return resultHandshakeResponse.hasCaptureInterval;
+}
+- (Float64) captureInterval {
+  return resultHandshakeResponse.captureInterval;
+}
+- (VLTPBHandshakeResponseBuilder*) setCaptureInterval:(Float64) value {
+  resultHandshakeResponse.hasCaptureInterval = YES;
+  resultHandshakeResponse.captureInterval = value;
+  return self;
+}
+- (VLTPBHandshakeResponseBuilder*) clearCaptureInterval {
+  resultHandshakeResponse.hasCaptureInterval = NO;
+  resultHandshakeResponse.captureInterval = 0;
+  return self;
+}
+- (BOOL) hasCanDetectMotion {
+  return resultHandshakeResponse.hasCanDetectMotion;
+}
+- (BOOL) canDetectMotion {
+  return resultHandshakeResponse.canDetectMotion;
+}
+- (VLTPBHandshakeResponseBuilder*) setCanDetectMotion:(BOOL) value {
+  resultHandshakeResponse.hasCanDetectMotion = YES;
+  resultHandshakeResponse.canDetectMotion = value;
+  return self;
+}
+- (VLTPBHandshakeResponseBuilder*) clearCanDetectMotion {
+  resultHandshakeResponse.hasCanDetectMotion = NO;
+  resultHandshakeResponse.canDetectMotion = NO;
+  return self;
+}
+- (BOOL) hasCanLabelMotion {
+  return resultHandshakeResponse.hasCanLabelMotion;
+}
+- (BOOL) canLabelMotion {
+  return resultHandshakeResponse.canLabelMotion;
+}
+- (VLTPBHandshakeResponseBuilder*) setCanLabelMotion:(BOOL) value {
+  resultHandshakeResponse.hasCanLabelMotion = YES;
+  resultHandshakeResponse.canLabelMotion = value;
+  return self;
+}
+- (VLTPBHandshakeResponseBuilder*) clearCanLabelMotion {
+  resultHandshakeResponse.hasCanLabelMotion = NO;
+  resultHandshakeResponse.canLabelMotion = NO;
+  return self;
+}
+@end
+
+@interface VLTPBRequest ()
+@property (strong) NSMutableArray<VLTPBSensor*> * sensorsArray;
+@property (strong) NSMutableArray * modelNamesArray;
+@property (strong) NSString* sessionId;
+@end
+
+@implementation VLTPBRequest
+
+@synthesize sensorsArray;
+@dynamic sensors;
+@synthesize modelNamesArray;
+@dynamic modelNames;
+- (BOOL) hasSessionId {
+  return !!hasSessionId_;
+}
+- (void) setHasSessionId:(BOOL) _value_ {
+  hasSessionId_ = !!_value_;
+}
+@synthesize sessionId;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.sessionId = @"";
+  }
+  return self;
+}
+static VLTPBRequest* defaultVLTPBRequestInstance = nil;
++ (void) initialize {
+  if (self == [VLTPBRequest class]) {
+    defaultVLTPBRequestInstance = [[VLTPBRequest alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultVLTPBRequestInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultVLTPBRequestInstance;
+}
+- (NSArray<VLTPBSensor*> *)sensors {
+  return sensorsArray;
 }
 - (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index {
-  return [resultDetectMotionRequest sensorsAtIndex:index];
+  return [sensorsArray objectAtIndex:index];
 }
-- (VLTPBDetectMotionRequestBuilder *)addSensors:(VLTPBSensor*)value {
-  if (resultDetectMotionRequest.sensorsArray == nil) {
-    resultDetectMotionRequest.sensorsArray = [[NSMutableArray alloc]init];
+- (NSArray *)modelNames {
+  return modelNamesArray;
+}
+- (NSString*)modelNamesAtIndex:(NSUInteger)index {
+  return [modelNamesArray objectAtIndex:index];
+}
+- (BOOL) isInitialized {
+  __block BOOL isInitsensors = YES;
+   [self.sensors enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
+    if (!element.isInitialized) {
+      isInitsensors = NO;
+      *stop = YES;
+    }
+  }];
+  if (!isInitsensors) return isInitsensors;
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  [self.sensorsArray enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
+    [output writeMessage:1 value:element];
+  }];
+  [self.modelNamesArray enumerateObjectsUsingBlock:^(NSString *element, NSUInteger idx, BOOL *stop) {
+    [output writeString:2 value:element];
+  }];
+  if (self.hasSessionId) {
+    [output writeString:3 value:self.sessionId];
   }
-  [resultDetectMotionRequest.sensorsArray addObject:value];
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  [self.sensorsArray enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
+    size_ += computeMessageSize(1, element);
+  }];
+  {
+    __block SInt32 dataSize = 0;
+    const NSUInteger count = self.modelNamesArray.count;
+    [self.modelNamesArray enumerateObjectsUsingBlock:^(NSString *element, NSUInteger idx, BOOL *stop) {
+      dataSize += computeStringSizeNoTag(element);
+    }];
+    size_ += dataSize;
+    size_ += (SInt32)(1 * count);
+  }
+  if (self.hasSessionId) {
+    size_ += computeStringSize(3, self.sessionId);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (VLTPBRequest*) parseFromData:(NSData*) data {
+  return (VLTPBRequest*)[[[VLTPBRequest builder] mergeFromData:data] build];
+}
++ (VLTPBRequest*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBRequest*)[[[VLTPBRequest builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBRequest*) parseFromInputStream:(NSInputStream*) input {
+  return (VLTPBRequest*)[[[VLTPBRequest builder] mergeFromInputStream:input] build];
+}
++ (VLTPBRequest*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBRequest*)[[[VLTPBRequest builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBRequest*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (VLTPBRequest*)[[[VLTPBRequest builder] mergeFromCodedInputStream:input] build];
+}
++ (VLTPBRequest*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBRequest*)[[[VLTPBRequest builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBRequestBuilder*) builder {
+  return [[VLTPBRequestBuilder alloc] init];
+}
++ (VLTPBRequestBuilder*) builderWithPrototype:(VLTPBRequest*) prototype {
+  return [[VLTPBRequest builder] mergeFrom:prototype];
+}
+- (VLTPBRequestBuilder*) builder {
+  return [VLTPBRequest builder];
+}
+- (VLTPBRequestBuilder*) toBuilder {
+  return [VLTPBRequest builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  [self.sensorsArray enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
+    [output appendFormat:@"%@%@ {\n", indent, @"sensors"];
+    [element writeDescriptionTo:output
+                     withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }];
+  [self.modelNamesArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"modelNames", obj];
+  }];
+  if (self.hasSessionId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"sessionId", self.sessionId];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  for (VLTPBSensor* element in self.sensorsArray) {
+    NSMutableDictionary *elementDictionary = [NSMutableDictionary dictionary];
+    [element storeInDictionary:elementDictionary];
+    [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"sensors"];
+  }
+  [dictionary setObject:self.modelNames forKey: @"modelNames"];
+  if (self.hasSessionId) {
+    [dictionary setObject: self.sessionId forKey: @"sessionId"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[VLTPBRequest class]]) {
+    return NO;
+  }
+  VLTPBRequest *otherMessage = other;
+  return
+      [self.sensorsArray isEqualToArray:otherMessage.sensorsArray] &&
+      [self.modelNamesArray isEqualToArray:otherMessage.modelNamesArray] &&
+      self.hasSessionId == otherMessage.hasSessionId &&
+      (!self.hasSessionId || [self.sessionId isEqual:otherMessage.sessionId]) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  [self.sensorsArray enumerateObjectsUsingBlock:^(VLTPBSensor *element, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [element hash];
+  }];
+  [self.modelNamesArray enumerateObjectsUsingBlock:^(NSString *element, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [element hash];
+  }];
+  if (self.hasSessionId) {
+    hashCode = hashCode * 31 + [self.sessionId hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface VLTPBRequestBuilder()
+@property (strong) VLTPBRequest* resultRequest;
+@end
+
+@implementation VLTPBRequestBuilder
+@synthesize resultRequest;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultRequest = [[VLTPBRequest alloc] init];
+  }
   return self;
 }
-- (VLTPBDetectMotionRequestBuilder *)setSensorsArray:(NSArray *)array {
-  resultDetectMotionRequest.sensorsArray = [[NSMutableArray alloc]initWithArray:array];
+- (PBGeneratedMessage*) internalGetResult {
+  return resultRequest;
+}
+- (VLTPBRequestBuilder*) clear {
+  self.resultRequest = [[VLTPBRequest alloc] init];
   return self;
 }
-- (VLTPBDetectMotionRequestBuilder *)clearSensors {
-  resultDetectMotionRequest.sensorsArray = nil;
+- (VLTPBRequestBuilder*) clone {
+  return [VLTPBRequest builderWithPrototype:resultRequest];
+}
+- (VLTPBRequest*) defaultInstance {
+  return [VLTPBRequest defaultInstance];
+}
+- (VLTPBRequest*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (VLTPBRequest*) buildPartial {
+  VLTPBRequest* returnMe = resultRequest;
+  self.resultRequest = nil;
+  return returnMe;
+}
+- (VLTPBRequestBuilder*) mergeFrom:(VLTPBRequest*) other {
+  if (other == [VLTPBRequest defaultInstance]) {
+    return self;
+  }
+  if (other.sensorsArray.count > 0) {
+    if (resultRequest.sensorsArray == nil) {
+      resultRequest.sensorsArray = [[NSMutableArray alloc] initWithArray:other.sensorsArray];
+    } else {
+      [resultRequest.sensorsArray addObjectsFromArray:other.sensorsArray];
+    }
+  }
+  if (other.modelNamesArray.count > 0) {
+    if (resultRequest.modelNamesArray == nil) {
+      resultRequest.modelNamesArray = [[NSMutableArray alloc] initWithArray:other.modelNamesArray];
+    } else {
+      [resultRequest.modelNamesArray addObjectsFromArray:other.modelNamesArray];
+    }
+  }
+  if (other.hasSessionId) {
+    [self setSessionId:other.sessionId];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (VLTPBRequestBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (VLTPBRequestBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        VLTPBSensorBuilder* subBuilder = [VLTPBSensor builder];
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self addSensors:[subBuilder buildPartial]];
+        break;
+      }
+      case 18: {
+        [self addModelNames:[input readString]];
+        break;
+      }
+      case 26: {
+        [self setSessionId:[input readString]];
+        break;
+      }
+    }
+  }
+}
+- (NSMutableArray<VLTPBSensor*> *)sensors {
+  return resultRequest.sensorsArray;
+}
+- (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index {
+  return [resultRequest sensorsAtIndex:index];
+}
+- (VLTPBRequestBuilder *)addSensors:(VLTPBSensor*)value {
+  if (resultRequest.sensorsArray == nil) {
+    resultRequest.sensorsArray = [[NSMutableArray alloc]init];
+  }
+  [resultRequest.sensorsArray addObject:value];
+  return self;
+}
+- (VLTPBRequestBuilder *)setSensorsArray:(NSArray<VLTPBSensor*> *)array {
+  resultRequest.sensorsArray = [[NSMutableArray alloc]initWithArray:array];
+  return self;
+}
+- (VLTPBRequestBuilder *)clearSensors {
+  resultRequest.sensorsArray = nil;
+  return self;
+}
+- (NSMutableArray *)modelNames {
+  return resultRequest.modelNamesArray;
+}
+- (NSString*)modelNamesAtIndex:(NSUInteger)index {
+  return [resultRequest modelNamesAtIndex:index];
+}
+- (VLTPBRequestBuilder *)addModelNames:(NSString*)value {
+  if (resultRequest.modelNamesArray == nil) {
+    resultRequest.modelNamesArray = [[NSMutableArray alloc]init];
+  }
+  [resultRequest.modelNamesArray addObject:value];
+  return self;
+}
+- (VLTPBRequestBuilder *)setModelNamesArray:(NSArray *)array {
+  resultRequest.modelNamesArray = [[NSMutableArray alloc] initWithArray:array];
+  return self;
+}
+- (VLTPBRequestBuilder *)clearModelNames {
+  resultRequest.modelNamesArray = nil;
+  return self;
+}
+- (BOOL) hasSessionId {
+  return resultRequest.hasSessionId;
+}
+- (NSString*) sessionId {
+  return resultRequest.sessionId;
+}
+- (VLTPBRequestBuilder*) setSessionId:(NSString*) value {
+  resultRequest.hasSessionId = YES;
+  resultRequest.sessionId = value;
+  return self;
+}
+- (VLTPBRequestBuilder*) clearSessionId {
+  resultRequest.hasSessionId = NO;
+  resultRequest.sessionId = @"";
+  return self;
+}
+@end
+
+@interface VLTPBModelPrediction ()
+@property (strong) NSString* modelName;
+@property (strong) NSMutableArray<VLTPBPrediction*> * predictionsArray;
+@end
+
+@implementation VLTPBModelPrediction
+
+- (BOOL) hasModelName {
+  return !!hasModelName_;
+}
+- (void) setHasModelName:(BOOL) _value_ {
+  hasModelName_ = !!_value_;
+}
+@synthesize modelName;
+@synthesize predictionsArray;
+@dynamic predictions;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.modelName = @"";
+  }
+  return self;
+}
+static VLTPBModelPrediction* defaultVLTPBModelPredictionInstance = nil;
++ (void) initialize {
+  if (self == [VLTPBModelPrediction class]) {
+    defaultVLTPBModelPredictionInstance = [[VLTPBModelPrediction alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultVLTPBModelPredictionInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultVLTPBModelPredictionInstance;
+}
+- (NSArray<VLTPBPrediction*> *)predictions {
+  return predictionsArray;
+}
+- (VLTPBPrediction*)predictionsAtIndex:(NSUInteger)index {
+  return [predictionsArray objectAtIndex:index];
+}
+- (BOOL) isInitialized {
+  if (!self.hasModelName) {
+    return NO;
+  }
+  __block BOOL isInitpredictions = YES;
+   [self.predictions enumerateObjectsUsingBlock:^(VLTPBPrediction *element, NSUInteger idx, BOOL *stop) {
+    if (!element.isInitialized) {
+      isInitpredictions = NO;
+      *stop = YES;
+    }
+  }];
+  if (!isInitpredictions) return isInitpredictions;
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasModelName) {
+    [output writeString:1 value:self.modelName];
+  }
+  [self.predictionsArray enumerateObjectsUsingBlock:^(VLTPBPrediction *element, NSUInteger idx, BOOL *stop) {
+    [output writeMessage:2 value:element];
+  }];
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasModelName) {
+    size_ += computeStringSize(1, self.modelName);
+  }
+  [self.predictionsArray enumerateObjectsUsingBlock:^(VLTPBPrediction *element, NSUInteger idx, BOOL *stop) {
+    size_ += computeMessageSize(2, element);
+  }];
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (VLTPBModelPrediction*) parseFromData:(NSData*) data {
+  return (VLTPBModelPrediction*)[[[VLTPBModelPrediction builder] mergeFromData:data] build];
+}
++ (VLTPBModelPrediction*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBModelPrediction*)[[[VLTPBModelPrediction builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBModelPrediction*) parseFromInputStream:(NSInputStream*) input {
+  return (VLTPBModelPrediction*)[[[VLTPBModelPrediction builder] mergeFromInputStream:input] build];
+}
++ (VLTPBModelPrediction*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBModelPrediction*)[[[VLTPBModelPrediction builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBModelPrediction*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (VLTPBModelPrediction*)[[[VLTPBModelPrediction builder] mergeFromCodedInputStream:input] build];
+}
++ (VLTPBModelPrediction*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBModelPrediction*)[[[VLTPBModelPrediction builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBModelPredictionBuilder*) builder {
+  return [[VLTPBModelPredictionBuilder alloc] init];
+}
++ (VLTPBModelPredictionBuilder*) builderWithPrototype:(VLTPBModelPrediction*) prototype {
+  return [[VLTPBModelPrediction builder] mergeFrom:prototype];
+}
+- (VLTPBModelPredictionBuilder*) builder {
+  return [VLTPBModelPrediction builder];
+}
+- (VLTPBModelPredictionBuilder*) toBuilder {
+  return [VLTPBModelPrediction builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasModelName) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"modelName", self.modelName];
+  }
+  [self.predictionsArray enumerateObjectsUsingBlock:^(VLTPBPrediction *element, NSUInteger idx, BOOL *stop) {
+    [output appendFormat:@"%@%@ {\n", indent, @"predictions"];
+    [element writeDescriptionTo:output
+                     withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }];
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasModelName) {
+    [dictionary setObject: self.modelName forKey: @"modelName"];
+  }
+  for (VLTPBPrediction* element in self.predictionsArray) {
+    NSMutableDictionary *elementDictionary = [NSMutableDictionary dictionary];
+    [element storeInDictionary:elementDictionary];
+    [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"predictions"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[VLTPBModelPrediction class]]) {
+    return NO;
+  }
+  VLTPBModelPrediction *otherMessage = other;
+  return
+      self.hasModelName == otherMessage.hasModelName &&
+      (!self.hasModelName || [self.modelName isEqual:otherMessage.modelName]) &&
+      [self.predictionsArray isEqualToArray:otherMessage.predictionsArray] &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasModelName) {
+    hashCode = hashCode * 31 + [self.modelName hash];
+  }
+  [self.predictionsArray enumerateObjectsUsingBlock:^(VLTPBPrediction *element, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [element hash];
+  }];
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface VLTPBModelPredictionBuilder()
+@property (strong) VLTPBModelPrediction* resultModelPrediction;
+@end
+
+@implementation VLTPBModelPredictionBuilder
+@synthesize resultModelPrediction;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultModelPrediction = [[VLTPBModelPrediction alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultModelPrediction;
+}
+- (VLTPBModelPredictionBuilder*) clear {
+  self.resultModelPrediction = [[VLTPBModelPrediction alloc] init];
+  return self;
+}
+- (VLTPBModelPredictionBuilder*) clone {
+  return [VLTPBModelPrediction builderWithPrototype:resultModelPrediction];
+}
+- (VLTPBModelPrediction*) defaultInstance {
+  return [VLTPBModelPrediction defaultInstance];
+}
+- (VLTPBModelPrediction*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (VLTPBModelPrediction*) buildPartial {
+  VLTPBModelPrediction* returnMe = resultModelPrediction;
+  self.resultModelPrediction = nil;
+  return returnMe;
+}
+- (VLTPBModelPredictionBuilder*) mergeFrom:(VLTPBModelPrediction*) other {
+  if (other == [VLTPBModelPrediction defaultInstance]) {
+    return self;
+  }
+  if (other.hasModelName) {
+    [self setModelName:other.modelName];
+  }
+  if (other.predictionsArray.count > 0) {
+    if (resultModelPrediction.predictionsArray == nil) {
+      resultModelPrediction.predictionsArray = [[NSMutableArray alloc] initWithArray:other.predictionsArray];
+    } else {
+      [resultModelPrediction.predictionsArray addObjectsFromArray:other.predictionsArray];
+    }
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (VLTPBModelPredictionBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (VLTPBModelPredictionBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        [self setModelName:[input readString]];
+        break;
+      }
+      case 18: {
+        VLTPBPredictionBuilder* subBuilder = [VLTPBPrediction builder];
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self addPredictions:[subBuilder buildPartial]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasModelName {
+  return resultModelPrediction.hasModelName;
+}
+- (NSString*) modelName {
+  return resultModelPrediction.modelName;
+}
+- (VLTPBModelPredictionBuilder*) setModelName:(NSString*) value {
+  resultModelPrediction.hasModelName = YES;
+  resultModelPrediction.modelName = value;
+  return self;
+}
+- (VLTPBModelPredictionBuilder*) clearModelName {
+  resultModelPrediction.hasModelName = NO;
+  resultModelPrediction.modelName = @"";
+  return self;
+}
+- (NSMutableArray<VLTPBPrediction*> *)predictions {
+  return resultModelPrediction.predictionsArray;
+}
+- (VLTPBPrediction*)predictionsAtIndex:(NSUInteger)index {
+  return [resultModelPrediction predictionsAtIndex:index];
+}
+- (VLTPBModelPredictionBuilder *)addPredictions:(VLTPBPrediction*)value {
+  if (resultModelPrediction.predictionsArray == nil) {
+    resultModelPrediction.predictionsArray = [[NSMutableArray alloc]init];
+  }
+  [resultModelPrediction.predictionsArray addObject:value];
+  return self;
+}
+- (VLTPBModelPredictionBuilder *)setPredictionsArray:(NSArray<VLTPBPrediction*> *)array {
+  resultModelPrediction.predictionsArray = [[NSMutableArray alloc]initWithArray:array];
+  return self;
+}
+- (VLTPBModelPredictionBuilder *)clearPredictions {
+  resultModelPrediction.predictionsArray = nil;
+  return self;
+}
+@end
+
+@interface VLTPBPrediction ()
+@property (strong) NSString* name;
+@property Float32 confidence;
+@property Float64 timestamp;
+@end
+
+@implementation VLTPBPrediction
+
+- (BOOL) hasName {
+  return !!hasName_;
+}
+- (void) setHasName:(BOOL) _value_ {
+  hasName_ = !!_value_;
+}
+@synthesize name;
+- (BOOL) hasConfidence {
+  return !!hasConfidence_;
+}
+- (void) setHasConfidence:(BOOL) _value_ {
+  hasConfidence_ = !!_value_;
+}
+@synthesize confidence;
+- (BOOL) hasTimestamp {
+  return !!hasTimestamp_;
+}
+- (void) setHasTimestamp:(BOOL) _value_ {
+  hasTimestamp_ = !!_value_;
+}
+@synthesize timestamp;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.name = @"";
+    self.confidence = 0;
+    self.timestamp = 0;
+  }
+  return self;
+}
+static VLTPBPrediction* defaultVLTPBPredictionInstance = nil;
++ (void) initialize {
+  if (self == [VLTPBPrediction class]) {
+    defaultVLTPBPredictionInstance = [[VLTPBPrediction alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultVLTPBPredictionInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultVLTPBPredictionInstance;
+}
+- (BOOL) isInitialized {
+  if (!self.hasName) {
+    return NO;
+  }
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasName) {
+    [output writeString:1 value:self.name];
+  }
+  if (self.hasConfidence) {
+    [output writeFloat:2 value:self.confidence];
+  }
+  if (self.hasTimestamp) {
+    [output writeDouble:3 value:self.timestamp];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasName) {
+    size_ += computeStringSize(1, self.name);
+  }
+  if (self.hasConfidence) {
+    size_ += computeFloatSize(2, self.confidence);
+  }
+  if (self.hasTimestamp) {
+    size_ += computeDoubleSize(3, self.timestamp);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (VLTPBPrediction*) parseFromData:(NSData*) data {
+  return (VLTPBPrediction*)[[[VLTPBPrediction builder] mergeFromData:data] build];
+}
++ (VLTPBPrediction*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBPrediction*)[[[VLTPBPrediction builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBPrediction*) parseFromInputStream:(NSInputStream*) input {
+  return (VLTPBPrediction*)[[[VLTPBPrediction builder] mergeFromInputStream:input] build];
+}
++ (VLTPBPrediction*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBPrediction*)[[[VLTPBPrediction builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBPrediction*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (VLTPBPrediction*)[[[VLTPBPrediction builder] mergeFromCodedInputStream:input] build];
+}
++ (VLTPBPrediction*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBPrediction*)[[[VLTPBPrediction builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBPredictionBuilder*) builder {
+  return [[VLTPBPredictionBuilder alloc] init];
+}
++ (VLTPBPredictionBuilder*) builderWithPrototype:(VLTPBPrediction*) prototype {
+  return [[VLTPBPrediction builder] mergeFrom:prototype];
+}
+- (VLTPBPredictionBuilder*) builder {
+  return [VLTPBPrediction builder];
+}
+- (VLTPBPredictionBuilder*) toBuilder {
+  return [VLTPBPrediction builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasName) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"name", self.name];
+  }
+  if (self.hasConfidence) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"confidence", [NSNumber numberWithFloat:self.confidence]];
+  }
+  if (self.hasTimestamp) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"timestamp", [NSNumber numberWithDouble:self.timestamp]];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasName) {
+    [dictionary setObject: self.name forKey: @"name"];
+  }
+  if (self.hasConfidence) {
+    [dictionary setObject: [NSNumber numberWithFloat:self.confidence] forKey: @"confidence"];
+  }
+  if (self.hasTimestamp) {
+    [dictionary setObject: [NSNumber numberWithDouble:self.timestamp] forKey: @"timestamp"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[VLTPBPrediction class]]) {
+    return NO;
+  }
+  VLTPBPrediction *otherMessage = other;
+  return
+      self.hasName == otherMessage.hasName &&
+      (!self.hasName || [self.name isEqual:otherMessage.name]) &&
+      self.hasConfidence == otherMessage.hasConfidence &&
+      (!self.hasConfidence || self.confidence == otherMessage.confidence) &&
+      self.hasTimestamp == otherMessage.hasTimestamp &&
+      (!self.hasTimestamp || self.timestamp == otherMessage.timestamp) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasName) {
+    hashCode = hashCode * 31 + [self.name hash];
+  }
+  if (self.hasConfidence) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithFloat:self.confidence] hash];
+  }
+  if (self.hasTimestamp) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithDouble:self.timestamp] hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface VLTPBPredictionBuilder()
+@property (strong) VLTPBPrediction* resultPrediction;
+@end
+
+@implementation VLTPBPredictionBuilder
+@synthesize resultPrediction;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultPrediction = [[VLTPBPrediction alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultPrediction;
+}
+- (VLTPBPredictionBuilder*) clear {
+  self.resultPrediction = [[VLTPBPrediction alloc] init];
+  return self;
+}
+- (VLTPBPredictionBuilder*) clone {
+  return [VLTPBPrediction builderWithPrototype:resultPrediction];
+}
+- (VLTPBPrediction*) defaultInstance {
+  return [VLTPBPrediction defaultInstance];
+}
+- (VLTPBPrediction*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (VLTPBPrediction*) buildPartial {
+  VLTPBPrediction* returnMe = resultPrediction;
+  self.resultPrediction = nil;
+  return returnMe;
+}
+- (VLTPBPredictionBuilder*) mergeFrom:(VLTPBPrediction*) other {
+  if (other == [VLTPBPrediction defaultInstance]) {
+    return self;
+  }
+  if (other.hasName) {
+    [self setName:other.name];
+  }
+  if (other.hasConfidence) {
+    [self setConfidence:other.confidence];
+  }
+  if (other.hasTimestamp) {
+    [self setTimestamp:other.timestamp];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (VLTPBPredictionBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (VLTPBPredictionBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        [self setName:[input readString]];
+        break;
+      }
+      case 21: {
+        [self setConfidence:[input readFloat]];
+        break;
+      }
+      case 25: {
+        [self setTimestamp:[input readDouble]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasName {
+  return resultPrediction.hasName;
+}
+- (NSString*) name {
+  return resultPrediction.name;
+}
+- (VLTPBPredictionBuilder*) setName:(NSString*) value {
+  resultPrediction.hasName = YES;
+  resultPrediction.name = value;
+  return self;
+}
+- (VLTPBPredictionBuilder*) clearName {
+  resultPrediction.hasName = NO;
+  resultPrediction.name = @"";
+  return self;
+}
+- (BOOL) hasConfidence {
+  return resultPrediction.hasConfidence;
+}
+- (Float32) confidence {
+  return resultPrediction.confidence;
+}
+- (VLTPBPredictionBuilder*) setConfidence:(Float32) value {
+  resultPrediction.hasConfidence = YES;
+  resultPrediction.confidence = value;
+  return self;
+}
+- (VLTPBPredictionBuilder*) clearConfidence {
+  resultPrediction.hasConfidence = NO;
+  resultPrediction.confidence = 0;
+  return self;
+}
+- (BOOL) hasTimestamp {
+  return resultPrediction.hasTimestamp;
+}
+- (Float64) timestamp {
+  return resultPrediction.timestamp;
+}
+- (VLTPBPredictionBuilder*) setTimestamp:(Float64) value {
+  resultPrediction.hasTimestamp = YES;
+  resultPrediction.timestamp = value;
+  return self;
+}
+- (VLTPBPredictionBuilder*) clearTimestamp {
+  resultPrediction.hasTimestamp = NO;
+  resultPrediction.timestamp = 0;
+  return self;
+}
+@end
+
+@interface VLTPBError ()
+@property (strong) NSString* errorMessage;
+@property (strong) NSString* errorCode;
+@end
+
+@implementation VLTPBError
+
+- (BOOL) hasErrorMessage {
+  return !!hasErrorMessage_;
+}
+- (void) setHasErrorMessage:(BOOL) _value_ {
+  hasErrorMessage_ = !!_value_;
+}
+@synthesize errorMessage;
+- (BOOL) hasErrorCode {
+  return !!hasErrorCode_;
+}
+- (void) setHasErrorCode:(BOOL) _value_ {
+  hasErrorCode_ = !!_value_;
+}
+@synthesize errorCode;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.errorMessage = @"";
+    self.errorCode = @"";
+  }
+  return self;
+}
+static VLTPBError* defaultVLTPBErrorInstance = nil;
++ (void) initialize {
+  if (self == [VLTPBError class]) {
+    defaultVLTPBErrorInstance = [[VLTPBError alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultVLTPBErrorInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultVLTPBErrorInstance;
+}
+- (BOOL) isInitialized {
+  if (!self.hasErrorMessage) {
+    return NO;
+  }
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasErrorMessage) {
+    [output writeString:1 value:self.errorMessage];
+  }
+  if (self.hasErrorCode) {
+    [output writeString:2 value:self.errorCode];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasErrorMessage) {
+    size_ += computeStringSize(1, self.errorMessage);
+  }
+  if (self.hasErrorCode) {
+    size_ += computeStringSize(2, self.errorCode);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (VLTPBError*) parseFromData:(NSData*) data {
+  return (VLTPBError*)[[[VLTPBError builder] mergeFromData:data] build];
+}
++ (VLTPBError*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBError*)[[[VLTPBError builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBError*) parseFromInputStream:(NSInputStream*) input {
+  return (VLTPBError*)[[[VLTPBError builder] mergeFromInputStream:input] build];
+}
++ (VLTPBError*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBError*)[[[VLTPBError builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBError*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (VLTPBError*)[[[VLTPBError builder] mergeFromCodedInputStream:input] build];
+}
++ (VLTPBError*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBError*)[[[VLTPBError builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBErrorBuilder*) builder {
+  return [[VLTPBErrorBuilder alloc] init];
+}
++ (VLTPBErrorBuilder*) builderWithPrototype:(VLTPBError*) prototype {
+  return [[VLTPBError builder] mergeFrom:prototype];
+}
+- (VLTPBErrorBuilder*) builder {
+  return [VLTPBError builder];
+}
+- (VLTPBErrorBuilder*) toBuilder {
+  return [VLTPBError builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasErrorMessage) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"errorMessage", self.errorMessage];
+  }
+  if (self.hasErrorCode) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"errorCode", self.errorCode];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasErrorMessage) {
+    [dictionary setObject: self.errorMessage forKey: @"errorMessage"];
+  }
+  if (self.hasErrorCode) {
+    [dictionary setObject: self.errorCode forKey: @"errorCode"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[VLTPBError class]]) {
+    return NO;
+  }
+  VLTPBError *otherMessage = other;
+  return
+      self.hasErrorMessage == otherMessage.hasErrorMessage &&
+      (!self.hasErrorMessage || [self.errorMessage isEqual:otherMessage.errorMessage]) &&
+      self.hasErrorCode == otherMessage.hasErrorCode &&
+      (!self.hasErrorCode || [self.errorCode isEqual:otherMessage.errorCode]) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasErrorMessage) {
+    hashCode = hashCode * 31 + [self.errorMessage hash];
+  }
+  if (self.hasErrorCode) {
+    hashCode = hashCode * 31 + [self.errorCode hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface VLTPBErrorBuilder()
+@property (strong) VLTPBError* resultError;
+@end
+
+@implementation VLTPBErrorBuilder
+@synthesize resultError;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultError = [[VLTPBError alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultError;
+}
+- (VLTPBErrorBuilder*) clear {
+  self.resultError = [[VLTPBError alloc] init];
+  return self;
+}
+- (VLTPBErrorBuilder*) clone {
+  return [VLTPBError builderWithPrototype:resultError];
+}
+- (VLTPBError*) defaultInstance {
+  return [VLTPBError defaultInstance];
+}
+- (VLTPBError*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (VLTPBError*) buildPartial {
+  VLTPBError* returnMe = resultError;
+  self.resultError = nil;
+  return returnMe;
+}
+- (VLTPBErrorBuilder*) mergeFrom:(VLTPBError*) other {
+  if (other == [VLTPBError defaultInstance]) {
+    return self;
+  }
+  if (other.hasErrorMessage) {
+    [self setErrorMessage:other.errorMessage];
+  }
+  if (other.hasErrorCode) {
+    [self setErrorCode:other.errorCode];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (VLTPBErrorBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (VLTPBErrorBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        [self setErrorMessage:[input readString]];
+        break;
+      }
+      case 18: {
+        [self setErrorCode:[input readString]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasErrorMessage {
+  return resultError.hasErrorMessage;
+}
+- (NSString*) errorMessage {
+  return resultError.errorMessage;
+}
+- (VLTPBErrorBuilder*) setErrorMessage:(NSString*) value {
+  resultError.hasErrorMessage = YES;
+  resultError.errorMessage = value;
+  return self;
+}
+- (VLTPBErrorBuilder*) clearErrorMessage {
+  resultError.hasErrorMessage = NO;
+  resultError.errorMessage = @"";
+  return self;
+}
+- (BOOL) hasErrorCode {
+  return resultError.hasErrorCode;
+}
+- (NSString*) errorCode {
+  return resultError.errorCode;
+}
+- (VLTPBErrorBuilder*) setErrorCode:(NSString*) value {
+  resultError.hasErrorCode = YES;
+  resultError.errorCode = value;
+  return self;
+}
+- (VLTPBErrorBuilder*) clearErrorCode {
+  resultError.hasErrorCode = NO;
+  resultError.errorCode = @"";
+  return self;
+}
+@end
+
+@interface VLTPBResponse ()
+@property (strong) NSMutableArray<VLTPBModelPrediction*> * modelPredictionsArray;
+@property (strong) VLTPBError* error;
+@end
+
+@implementation VLTPBResponse
+
+@synthesize modelPredictionsArray;
+@dynamic modelPredictions;
+- (BOOL) hasError {
+  return !!hasError_;
+}
+- (void) setHasError:(BOOL) _value_ {
+  hasError_ = !!_value_;
+}
+@synthesize error;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.error = [VLTPBError defaultInstance];
+  }
+  return self;
+}
+static VLTPBResponse* defaultVLTPBResponseInstance = nil;
++ (void) initialize {
+  if (self == [VLTPBResponse class]) {
+    defaultVLTPBResponseInstance = [[VLTPBResponse alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultVLTPBResponseInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultVLTPBResponseInstance;
+}
+- (NSArray<VLTPBModelPrediction*> *)modelPredictions {
+  return modelPredictionsArray;
+}
+- (VLTPBModelPrediction*)modelPredictionsAtIndex:(NSUInteger)index {
+  return [modelPredictionsArray objectAtIndex:index];
+}
+- (BOOL) isInitialized {
+  __block BOOL isInitmodelPredictions = YES;
+   [self.modelPredictions enumerateObjectsUsingBlock:^(VLTPBModelPrediction *element, NSUInteger idx, BOOL *stop) {
+    if (!element.isInitialized) {
+      isInitmodelPredictions = NO;
+      *stop = YES;
+    }
+  }];
+  if (!isInitmodelPredictions) return isInitmodelPredictions;
+  if (self.hasError) {
+    if (!self.error.isInitialized) {
+      return NO;
+    }
+  }
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  [self.modelPredictionsArray enumerateObjectsUsingBlock:^(VLTPBModelPrediction *element, NSUInteger idx, BOOL *stop) {
+    [output writeMessage:1 value:element];
+  }];
+  if (self.hasError) {
+    [output writeMessage:2 value:self.error];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  [self.modelPredictionsArray enumerateObjectsUsingBlock:^(VLTPBModelPrediction *element, NSUInteger idx, BOOL *stop) {
+    size_ += computeMessageSize(1, element);
+  }];
+  if (self.hasError) {
+    size_ += computeMessageSize(2, self.error);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (VLTPBResponse*) parseFromData:(NSData*) data {
+  return (VLTPBResponse*)[[[VLTPBResponse builder] mergeFromData:data] build];
+}
++ (VLTPBResponse*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBResponse*)[[[VLTPBResponse builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBResponse*) parseFromInputStream:(NSInputStream*) input {
+  return (VLTPBResponse*)[[[VLTPBResponse builder] mergeFromInputStream:input] build];
+}
++ (VLTPBResponse*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBResponse*)[[[VLTPBResponse builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBResponse*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (VLTPBResponse*)[[[VLTPBResponse builder] mergeFromCodedInputStream:input] build];
+}
++ (VLTPBResponse*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (VLTPBResponse*)[[[VLTPBResponse builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (VLTPBResponseBuilder*) builder {
+  return [[VLTPBResponseBuilder alloc] init];
+}
++ (VLTPBResponseBuilder*) builderWithPrototype:(VLTPBResponse*) prototype {
+  return [[VLTPBResponse builder] mergeFrom:prototype];
+}
+- (VLTPBResponseBuilder*) builder {
+  return [VLTPBResponse builder];
+}
+- (VLTPBResponseBuilder*) toBuilder {
+  return [VLTPBResponse builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  [self.modelPredictionsArray enumerateObjectsUsingBlock:^(VLTPBModelPrediction *element, NSUInteger idx, BOOL *stop) {
+    [output appendFormat:@"%@%@ {\n", indent, @"modelPredictions"];
+    [element writeDescriptionTo:output
+                     withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }];
+  if (self.hasError) {
+    [output appendFormat:@"%@%@ {\n", indent, @"error"];
+    [self.error writeDescriptionTo:output
+                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  for (VLTPBModelPrediction* element in self.modelPredictionsArray) {
+    NSMutableDictionary *elementDictionary = [NSMutableDictionary dictionary];
+    [element storeInDictionary:elementDictionary];
+    [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"modelPredictions"];
+  }
+  if (self.hasError) {
+   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
+   [self.error storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"error"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[VLTPBResponse class]]) {
+    return NO;
+  }
+  VLTPBResponse *otherMessage = other;
+  return
+      [self.modelPredictionsArray isEqualToArray:otherMessage.modelPredictionsArray] &&
+      self.hasError == otherMessage.hasError &&
+      (!self.hasError || [self.error isEqual:otherMessage.error]) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  [self.modelPredictionsArray enumerateObjectsUsingBlock:^(VLTPBModelPrediction *element, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [element hash];
+  }];
+  if (self.hasError) {
+    hashCode = hashCode * 31 + [self.error hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface VLTPBResponseBuilder()
+@property (strong) VLTPBResponse* resultResponse;
+@end
+
+@implementation VLTPBResponseBuilder
+@synthesize resultResponse;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultResponse = [[VLTPBResponse alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultResponse;
+}
+- (VLTPBResponseBuilder*) clear {
+  self.resultResponse = [[VLTPBResponse alloc] init];
+  return self;
+}
+- (VLTPBResponseBuilder*) clone {
+  return [VLTPBResponse builderWithPrototype:resultResponse];
+}
+- (VLTPBResponse*) defaultInstance {
+  return [VLTPBResponse defaultInstance];
+}
+- (VLTPBResponse*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (VLTPBResponse*) buildPartial {
+  VLTPBResponse* returnMe = resultResponse;
+  self.resultResponse = nil;
+  return returnMe;
+}
+- (VLTPBResponseBuilder*) mergeFrom:(VLTPBResponse*) other {
+  if (other == [VLTPBResponse defaultInstance]) {
+    return self;
+  }
+  if (other.modelPredictionsArray.count > 0) {
+    if (resultResponse.modelPredictionsArray == nil) {
+      resultResponse.modelPredictionsArray = [[NSMutableArray alloc] initWithArray:other.modelPredictionsArray];
+    } else {
+      [resultResponse.modelPredictionsArray addObjectsFromArray:other.modelPredictionsArray];
+    }
+  }
+  if (other.hasError) {
+    [self mergeError:other.error];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (VLTPBResponseBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (VLTPBResponseBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        VLTPBModelPredictionBuilder* subBuilder = [VLTPBModelPrediction builder];
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self addModelPredictions:[subBuilder buildPartial]];
+        break;
+      }
+      case 18: {
+        VLTPBErrorBuilder* subBuilder = [VLTPBError builder];
+        if (self.hasError) {
+          [subBuilder mergeFrom:self.error];
+        }
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self setError:[subBuilder buildPartial]];
+        break;
+      }
+    }
+  }
+}
+- (NSMutableArray<VLTPBModelPrediction*> *)modelPredictions {
+  return resultResponse.modelPredictionsArray;
+}
+- (VLTPBModelPrediction*)modelPredictionsAtIndex:(NSUInteger)index {
+  return [resultResponse modelPredictionsAtIndex:index];
+}
+- (VLTPBResponseBuilder *)addModelPredictions:(VLTPBModelPrediction*)value {
+  if (resultResponse.modelPredictionsArray == nil) {
+    resultResponse.modelPredictionsArray = [[NSMutableArray alloc]init];
+  }
+  [resultResponse.modelPredictionsArray addObject:value];
+  return self;
+}
+- (VLTPBResponseBuilder *)setModelPredictionsArray:(NSArray<VLTPBModelPrediction*> *)array {
+  resultResponse.modelPredictionsArray = [[NSMutableArray alloc]initWithArray:array];
+  return self;
+}
+- (VLTPBResponseBuilder *)clearModelPredictions {
+  resultResponse.modelPredictionsArray = nil;
+  return self;
+}
+- (BOOL) hasError {
+  return resultResponse.hasError;
+}
+- (VLTPBError*) error {
+  return resultResponse.error;
+}
+- (VLTPBResponseBuilder*) setError:(VLTPBError*) value {
+  resultResponse.hasError = YES;
+  resultResponse.error = value;
+  return self;
+}
+- (VLTPBResponseBuilder*) setErrorBuilder:(VLTPBErrorBuilder*) builderForValue {
+  return [self setError:[builderForValue build]];
+}
+- (VLTPBResponseBuilder*) mergeError:(VLTPBError*) value {
+  if (resultResponse.hasError &&
+      resultResponse.error != [VLTPBError defaultInstance]) {
+    resultResponse.error =
+      [[[VLTPBError builderWithPrototype:resultResponse.error] mergeFrom:value] buildPartial];
+  } else {
+    resultResponse.error = value;
+  }
+  resultResponse.hasError = YES;
+  return self;
+}
+- (VLTPBResponseBuilder*) clearError {
+  resultResponse.hasError = NO;
+  resultResponse.error = [VLTPBError defaultInstance];
   return self;
 }
 @end

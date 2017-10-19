@@ -5,17 +5,6 @@ enum PlatformType {
   Android = 1;
 }
 
-message Capture {
-  optional string impressionId    = 1;
-  required string ifa             = 2;
-  required uint32 sequenceIndex   = 3;
-  optional string appId           = 4;
-  optional string metadata        = 5;
-  required PlatformType platform  = 6;
-  repeated Sensor sensors         = 7;
-  required double timestamp       = 8;
-}
-
 message Sensor {
   required Type type      = 1;
   repeated Sample samples = 2;
@@ -33,6 +22,17 @@ message Sample {
   repeated float values       = 2;
 }
 
+message Capture {
+  optional string impressionId    = 1;
+  required string ifa             = 2;
+  required uint32 sequenceIndex   = 3;
+  optional string appId           = 4;
+  optional string metadata        = 5;
+  required PlatformType platform  = 6;
+  repeated Sensor sensors         = 7;
+  required double timestamp       = 8;
+}
+
 message DetectMotionRequest {
   required string id              = 1;
   required string userId          = 2;
@@ -42,3 +42,50 @@ message DetectMotionRequest {
   required PlatformType platform  = 6;
   required double timestamp       = 7;
 }
+
+message HandshakeRequest {
+  optional string authToken       = 1;
+  optional string idfa            = 2;
+  optional string userId          = 3;
+  optional string appId           = 4;
+  optional PlatformType platform  = 5;
+}
+
+
+message HandshakeResponse {
+  optional double sampleSize      = 1;
+  optional double captureInterval = 2;
+  optional bool   canDetectMotion = 3;
+  optional bool   canLabelMotion  = 4;
+}
+
+
+message Request {
+  repeated Sensor sensors         = 1;
+  repeated string modelNames      = 2;
+  optional string sessionId       = 3;
+}
+
+message ModelPrediction {
+  required string modelName = 1;
+  repeated Prediction predictions = 2;
+}
+
+message Prediction {
+  required string name = 1;
+  optional float confidence = 2;
+  optional double timestamp = 3;
+}
+
+message Error {
+  required string errorMessage = 1;
+  optional string errorCode    = 2;
+}
+
+message Response {
+  repeated ModelPrediction modelPredictions = 1;
+  optional Error error                      = 2;
+}
+
+
+
