@@ -1,4 +1,8 @@
+syntax = "proto2";
+
 package VelocityProto;
+
+option objc_class_prefix = "VLTPB";
 
 enum PlatformType {
   IOS     = 0;
