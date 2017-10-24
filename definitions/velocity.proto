@@ -36,11 +36,11 @@ message Capture {
 message DetectMotionRequest {
   required string id              = 1;
   required string userId          = 2;
-  repeated string modelName       = 3;
-  repeated Sensor sensors         = 4;
-  required uint32 sequenceIndex   = 5;
-  required PlatformType platform  = 6;
-  required double timestamp       = 7;
+  required uint32 sequenceIndex   = 3;
+  required PlatformType platform  = 4;
+  required double timestamp       = 5;
+  repeated string modelName       = 6;
+  repeated Sensor sensors         = 7;
 }
 
 message HandshakeRequest {

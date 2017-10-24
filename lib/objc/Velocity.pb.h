@@ -340,11 +340,11 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
 
 #define DetectMotionRequest_id @"id"
 #define DetectMotionRequest_userId @"userId"
-#define DetectMotionRequest_modelName @"modelName"
-#define DetectMotionRequest_sensors @"sensors"
 #define DetectMotionRequest_sequenceIndex @"sequenceIndex"
 #define DetectMotionRequest_platform @"platform"
 #define DetectMotionRequest_timestamp @"timestamp"
+#define DetectMotionRequest_modelName @"modelName"
+#define DetectMotionRequest_sensors @"sensors"
 @interface VLTPBDetectMotionRequest : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasTimestamp_:1;
@@ -367,11 +367,11 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
 - (BOOL) hasTimestamp;
 @property (readonly, strong) NSString* id;
 @property (readonly, strong) NSString* userId;
-@property (readonly, strong) NSArray * modelName;
-@property (readonly, strong) NSArray<VLTPBSensor*> * sensors;
 @property (readonly) UInt32 sequenceIndex;
 @property (readonly) VLTPBPlatformType platform;
 @property (readonly) Float64 timestamp;
+@property (readonly, strong) NSArray * modelName;
+@property (readonly, strong) NSArray<VLTPBSensor*> * sensors;
 - (NSString*)modelNameAtIndex:(NSUInteger)index;
 - (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index;
 
@@ -420,18 +420,6 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
 - (VLTPBDetectMotionRequestBuilder*) setUserId:(NSString*) value;
 - (VLTPBDetectMotionRequestBuilder*) clearUserId;
 
-- (NSMutableArray *)modelName;
-- (NSString*)modelNameAtIndex:(NSUInteger)index;
-- (VLTPBDetectMotionRequestBuilder *)addModelName:(NSString*)value;
-- (VLTPBDetectMotionRequestBuilder *)setModelNameArray:(NSArray *)array;
-- (VLTPBDetectMotionRequestBuilder *)clearModelName;
-
-- (NSMutableArray<VLTPBSensor*> *)sensors;
-- (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index;
-- (VLTPBDetectMotionRequestBuilder *)addSensors:(VLTPBSensor*)value;
-- (VLTPBDetectMotionRequestBuilder *)setSensorsArray:(NSArray<VLTPBSensor*> *)array;
-- (VLTPBDetectMotionRequestBuilder *)clearSensors;
-
 - (BOOL) hasSequenceIndex;
 - (UInt32) sequenceIndex;
 - (VLTPBDetectMotionRequestBuilder*) setSequenceIndex:(UInt32) value;
@@ -446,6 +434,18 @@ NSString *NSStringFromVLTPBSensorType(VLTPBSensorType value);
 - (Float64) timestamp;
 - (VLTPBDetectMotionRequestBuilder*) setTimestamp:(Float64) value;
 - (VLTPBDetectMotionRequestBuilder*) clearTimestamp;
+
+- (NSMutableArray *)modelName;
+- (NSString*)modelNameAtIndex:(NSUInteger)index;
+- (VLTPBDetectMotionRequestBuilder *)addModelName:(NSString*)value;
+- (VLTPBDetectMotionRequestBuilder *)setModelNameArray:(NSArray *)array;
+- (VLTPBDetectMotionRequestBuilder *)clearModelName;
+
+- (NSMutableArray<VLTPBSensor*> *)sensors;
+- (VLTPBSensor*)sensorsAtIndex:(NSUInteger)index;
+- (VLTPBDetectMotionRequestBuilder *)addSensors:(VLTPBSensor*)value;
+- (VLTPBDetectMotionRequestBuilder *)setSensorsArray:(NSArray<VLTPBSensor*> *)array;
+- (VLTPBDetectMotionRequestBuilder *)clearSensors;
 @end
 
 #define HandshakeRequest_authToken @"authToken"
